@@ -24,6 +24,7 @@ public:
     // Returns pointer to a material for a given name or nullptr when not found.
     material_ptr get_material(std::string& mat_name);
     materials get_materials();
+    ~material_lib();
     void dump();
 private:
     void update_material(material_ptr mtl, std::string& token);

@@ -1,8 +1,9 @@
 #include <glm/glm.hpp>
 
-#include <string>
+#include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <string>
 
 #include "obj_parser/material_lib.hpp"
 #include "extra/utility.hpp"
@@ -16,6 +17,12 @@ auto
 material_lib::get_materials() -> materials
 {
     return materials_;
+}
+
+material_lib::~material_lib()
+{
+  for (auto& p: materials_)
+    delete p.second;
 }
 
 void material_lib::update_material(material_ptr mtl, std::string& token)
@@ -109,8 +116,10 @@ material_lib::load_material_lib(std::istringstream& iss, bool draw_line)
             if (mtl) {
                 add_material(mtl, material_name, draw_line);
             }
-            mtl = new material;
+            mtl = new material();
             iss_ >> material_name;
+            std::transform(material_name.begin(), material_name.end(),
+                           material_name.begin(), ::tolower);
             materials_[material_name] = mtl;
         }
         else if (mtl)

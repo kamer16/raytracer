@@ -23,7 +23,8 @@ public:
           unsigned, hash_ptr>;
     using vertices_idx = std::vector<unsigned>;
     material(render_type type);
-    material() = default;
+    material()
+    { }
     material(material& other) = default;
     glm::vec4& get_ambient();
     glm::vec4& get_specular();
@@ -55,15 +56,15 @@ private:
     // Ks
     glm::vec4 specular_;
     // ambient texture map ==> map_Ka
-    std::string ambient_path_ = 0;
+    std::string ambient_path_;
     // diffuse texture map ==> map_Kd
-    std::string diffuse_path_ = 0;
+    std::string diffuse_path_;
     // specular texture map ==> map_Ks
-    std::string specular_path_ = 0;
+    std::string specular_path_;
     // dissolve texture map ==> map_d
-    std::string dissolve_path_ = 0;
+    std::string dissolve_path_;
     // Bump texture map ==> map_bump
-    std::string bump_path_ = 0;
+    std::string bump_path_;
     float dissolve = 1.0f;
 
     // Associative map_ of all indices of object to check.  If index already

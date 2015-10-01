@@ -386,6 +386,8 @@ obj_loader::load_obj(std::string& file) -> object*
             std::string mat_name;
             iss_ >> mat_name;
             // new material at work
+            std::transform(mat_name.begin(), mat_name.end(),
+                           mat_name.begin(), ::tolower);
             current_mat = mat_lib.get_material(mat_name);
         }
 
