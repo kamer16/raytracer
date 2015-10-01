@@ -1,1 +1,2 @@
 http://web.cse.ohio-state.edu/~hwshen/681/Site/Slides_files/basic_algo.pdf
+http://www.cs.princeton.edu/courses/archive/fall06/cos526/tmp/wynn.pdf
