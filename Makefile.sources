@@ -1,5 +1,6 @@
 SOURCES=main.cpp \
 	camera/camera.cpp \
+	scene/scene.cpp \
 	extra/polygon.cpp \
 	extra/utility.cpp \
 	light/light.cpp \

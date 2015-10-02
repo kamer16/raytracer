@@ -18,6 +18,7 @@ run:$(TARGET)
 
 _build/%.o: src/%.cpp
 	@ mkdir -p _build
+	@ mkdir -p _build/scene
 	@ mkdir -p _build/light
 	@ mkdir -p _build/camera
 	@ mkdir -p _build/extra
