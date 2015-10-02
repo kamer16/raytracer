@@ -23,9 +23,9 @@ enum class render_type
 
 struct boundary
 {
-  float width;
-  float height;
-  glm::vec3 look_at;
+  float width = 0.f;
+  float height = 0.f;
+  glm::vec3 look_at = glm::vec3(0.f, 0.f, 0.f);
   void merge(boundary&& other);
 };
 

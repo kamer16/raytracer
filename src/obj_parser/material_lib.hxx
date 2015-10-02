@@ -15,9 +15,9 @@ intersect_ray(material& mat, glm::vec3& eye, glm::vec3& look_at, glm::vec3& colo
       glm::vec3 u = v1 - v0;
       glm::vec3 v = v2 - v0;
       glm::vec3 n = glm::cross(u, v);
-
+      float dot_val = fabsf(glm::dot(glm::normalize(n), glm::normalize(look_at - eye)));
       // Ignore when ray is parallel to triangle
-      if (fabs(glm::dot(n, look_at - eye)) <= std::numeric_limits<float>::epsilon())
+      if (dot_val <= std::numeric_limits<float>::epsilon())
         continue;
       // Find intersection on plane
       float r = glm::dot(n, v0 - eye) / glm::dot(n, look_at - eye);
@@ -40,9 +40,8 @@ intersect_ray(material& mat, glm::vec3& eye, glm::vec3& look_at, glm::vec3& colo
           float new_dist = glm::distance(p, eye);
           if (new_dist < min_dist)
             {
-              color = glm::vec3((mat.get_ambient() + mat.get_diffuse()) *
+              color = dot_val * glm::vec3((mat.get_ambient() + mat.get_diffuse()) *
                                 255.0f / 2.0f);
-              utility::print(color);
               min_dist =  new_dist;
             }
         }
