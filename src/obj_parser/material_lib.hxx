@@ -1,10 +1,11 @@
 template<class material>
 float
-intersect_ray(material& mat, glm::vec3& L, glm::vec3& look_at)
+intersect_ray(material& mat, glm::vec3& eye, glm::vec3& look_at, glm::vec3& color)
 {
   using vertex_t = typename material::value_type;
   const std::vector<vertex_t> vertices = mat.get_vertices();
   auto& indices = mat.get_indices();
+  float min_dist = FLT_MAX;
   for (unsigned i = 0; i < indices.size(); i += 3)
     {
       glm::vec3 v0 = vertices[indices[i]].v;
@@ -16,15 +17,15 @@ intersect_ray(material& mat, glm::vec3& L, glm::vec3& look_at)
       glm::vec3 n = glm::cross(u, v);
 
       // Ignore when ray is parallel to triangle
-      if (fabs(glm::dot(n, look_at - L)) <= std::numeric_limits<float>::epsilon())
+      if (fabs(glm::dot(n, look_at - eye)) <= std::numeric_limits<float>::epsilon())
         continue;
       // Find intersection on plane
-      float r = glm::dot(n, v0 - L) / glm::dot(n, look_at - L);
+      float r = glm::dot(n, v0 - eye) / glm::dot(n, look_at - eye);
       if (r <= 0.0f)
         continue;
 
       // The intersecting point
-      glm::vec3 p = L + r * (look_at - L);
+      glm::vec3 p = eye + r * (look_at - eye);
       // A vector from two points on plane to compute s and t parameters based
       // on u and v coordinate system
       glm::vec3 w = p - v0;
@@ -35,10 +36,19 @@ intersect_ray(material& mat, glm::vec3& L, glm::vec3& look_at)
       t /= div;
       // Check if point was in triangle
       if (t >= 0.0f && s >= 0.0f && t + s <= 1.0f)
-        return 1;
+        {
+          float new_dist = glm::distance(p, eye);
+          if (new_dist < min_dist)
+            {
+              color = glm::vec3((mat.get_ambient() + mat.get_diffuse()) *
+                                255.0f / 2.0f);
+              utility::print(color);
+              min_dist =  new_dist;
+            }
+        }
     }
 
-  return -1;
+  return min_dist;
 }
 
 template<class material>

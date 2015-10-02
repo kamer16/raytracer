@@ -2,9 +2,11 @@
 
 #include "scene/scene.hpp"
 
+// Passing bound.width to camera is a good estimate to place camera a distance
+// of bound.width to look_at point
 scene::scene(boundary& bound,
              unsigned x_res, unsigned y_res)
-    : camera_(bound.look_at),
+    : camera_(bound.look_at, bound.width),
       width_(bound.width),
       height_(bound.height),
       x_res_(x_res),
@@ -42,15 +44,16 @@ scene::render()
           glm::vec3 ray = L + u * static_cast<float>(x) * w / x_res +
                               v * static_cast<float>(y - 1) * h / y_res;
           float min_dist = FLT_MAX;
-          glm::vec3 color(255, 255, 255);
+          glm::vec3 color(50, 50, 50);
           for (auto& o: objects_)
             {
               // dist == FLT_MAX when nothing was found
-              float dist = o->intersect_ray(eye, ray);
+              glm::vec3 tmp_color;
+              float dist = o->intersect_ray(eye, ray, tmp_color);
               if (min_dist > dist)
                 {
                   min_dist = dist;
-                  color = glm::vec3(0, 0, 0);
+                  color = tmp_color;
                 }
             }
           // Note image is pushed backwards
@@ -69,6 +72,7 @@ scene::dump_to_file(std::vector<glm::vec3>& vect)
   ofs << x_res_ << ' ' << y_res_ << std::endl;
   ofs << 255 << std::endl;
   for (auto& vec: vect)
-    ofs << vec.x << "\t" << vec.y << "\t" << vec.z << std::endl;
+    ofs << roundf(vec.x) << "\t" << roundf(vec.y) << "\t" << roundf(vec.z)
+        << std::endl;
   ofs.close();
 }

@@ -38,7 +38,7 @@ public:
 
     // Iterates over all triangles in object and returns closest polygon
     // or negative value if none is found
-    float intersect_ray(glm::vec3& L, glm::vec3& ray);
+    float intersect_ray(glm::vec3& L, glm::vec3& ray, glm::vec3& color);
 
     // Iterate on all vertices and computes width, height and best location
     // point.
