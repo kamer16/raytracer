@@ -3,6 +3,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <cmath>
 
 #include "obj_parser/material.hpp"
 #include "extra/utility.hpp"
@@ -107,4 +108,76 @@ void
 material::set_render_type(render_type type)
 {
     render_type_ = type;
+}
+
+float
+material::intersect_ray(glm::vec3& L, glm::vec3& ray)
+{
+  (void) ray;
+  (void) L;
+  // Ideally this class should be virtual void, however obj_loading uses a hack
+  // that needs to first instanciate a metrial class, as at the time of
+  // creation, obj_loader does not know what type of material to create.
+  std::cerr << "Material : material::intersect_ray should never be called as"
+               " this class should never be instanciated!!\n";
+  exit(1);
+}
+
+boundary
+material::get_boundary()
+{
+  // Ideally this class should be virtual void, however obj_loading uses a hack
+  // that needs to first instanciate a metrial class, as at the time of
+  // creation, obj_loader does not know what type of material to create.
+  std::cerr << "Material : material::intersect_ray should never be called as"
+               " this class should never be instanciated!!\n";
+  exit(1);
+}
+
+float
+material_v::intersect_ray(glm::vec3& L, glm::vec3& look_at)
+{
+  return ::intersect_ray(*this, L, look_at);
+}
+
+float
+material_vn::intersect_ray(glm::vec3& L, glm::vec3& look_at)
+{
+  return ::intersect_ray(*this, L, look_at);
+}
+
+float
+material_vnt::intersect_ray(glm::vec3& L, glm::vec3& look_at)
+{
+  return ::intersect_ray(*this, L, look_at);
+}
+
+float
+material_vnta::intersect_ray(glm::vec3& L, glm::vec3& look_at)
+{
+  return ::intersect_ray(*this, L, look_at);
+}
+
+boundary
+material_v::get_boundary()
+{
+  return ::get_boundary(*this);
+}
+
+boundary
+material_vn::get_boundary()
+{
+  return ::get_boundary(*this);
+}
+
+boundary
+material_vnt::get_boundary()
+{
+  return ::get_boundary(*this);
+}
+
+boundary
+material_vnta::get_boundary()
+{
+  return ::get_boundary(*this);
 }

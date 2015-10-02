@@ -46,6 +46,10 @@ public:
     void set_render_type(render_type type);
     vertices_idx& get_indices();
     index_map& get_idx_lut();
+
+    virtual boundary get_boundary();
+    virtual float intersect_ray(glm::vec3& L, glm::vec3& ray);
+    virtual ~material() = default;
 private:
     // Ns
     float shininess = 1.0f;
@@ -73,6 +77,7 @@ private:
 
     // By defalut a material has no textures and only basic material color
     render_type render_type_ = render_type::color;
+protected:
     // Associated indices to material, each pack of 3 indices represents a
     // triangle and the data is found in the vertex buffer whichi usually is on
     // the GPU in OpenGL
@@ -95,6 +100,10 @@ public:
     static const bool has_normal = 1;
     static const bool has_texture = 1;
     static const bool has_adjacent = 0;
+
+    virtual float intersect_ray(glm::vec3& L, glm::vec3& ray) override;
+    virtual boundary get_boundary() override;
+    virtual ~material_vnt() = default;
 private:
     container_vnt vertices_vnt;
 };
@@ -115,6 +124,10 @@ public:
     static const bool has_normal = 0;
     static const bool has_texture = 0;
     static const bool has_adjacent = 0;
+
+    virtual boundary get_boundary() override;
+    virtual float intersect_ray(glm::vec3& L, glm::vec3& ray) override;
+    virtual ~material_v() = default;
 private:
     container_v vertices_v;
 };
@@ -132,6 +145,10 @@ public:
     static const bool has_normal = 1;
     static const bool has_texture = 0;
     static const bool has_adjacent = 0;
+
+    virtual boundary get_boundary() override;
+    virtual float intersect_ray(glm::vec3& L, glm::vec3& ray) override;
+    virtual ~material_vn() = default;
 private:
     container_vn vertices_vn;
 };
@@ -149,8 +166,14 @@ public:
     static const bool has_normal = 1;
     static const bool has_texture = 1;
     static const bool has_adjacent = 1;
+
+    virtual boundary get_boundary() override;
+    virtual float intersect_ray(glm::vec3& L, glm::vec3& ray) override;
+    virtual ~material_vnta() = default;
 private:
     container_vnta vertices_vnta;
 };
+
+#include "obj_parser/material_lib.hxx"
 
 #endif // MATERIAL_HPP

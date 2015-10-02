@@ -21,8 +21,9 @@ material_lib::get_materials() -> materials
 
 material_lib::~material_lib()
 {
-  for (auto& p: materials_)
-    delete p.second;
+  // We can't delete these as they are used by our Object
+  // for (auto& p: materials_)
+  //   delete p.second;
 }
 
 void material_lib::update_material(material_ptr mtl, std::string& token)

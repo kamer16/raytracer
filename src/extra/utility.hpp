@@ -21,6 +21,14 @@ enum class render_type
     basic
 };
 
+struct boundary
+{
+  float width;
+  float height;
+  glm::vec3 look_at;
+  void merge(boundary&& other);
+};
+
 
 class hash_ptr
 {

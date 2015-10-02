@@ -49,3 +49,33 @@ object::set_render_mode(render_type type)
     for (auto mat : materials_)
         mat->set_render_type(type);
 }
+
+float
+object::intersect_ray(glm::vec3& L, glm::vec3& ray)
+{
+  float min_dist = FLT_MAX;
+  for (auto& mat : materials_)
+    {
+      float dist = mat->intersect_ray(L, ray);
+      if (dist > 0 && min_dist > dist)
+        min_dist = dist;
+    }
+  return min_dist;
+}
+
+boundary
+object::get_boundary()
+{
+  boundary res;
+  for (auto& mat: materials_)
+    {
+      res.merge(mat->get_boundary());
+    }
+  return res;
+}
+
+object::~object()
+{
+  for (auto& mat: materials_)
+    delete mat;
+}

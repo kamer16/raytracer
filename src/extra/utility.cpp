@@ -80,3 +80,18 @@ void print(glm::vec2 vec)
 }
 
 } // namespace utility
+
+void boundary::merge(boundary&& other)
+{
+  if (width <= 0.01 && height <= 0.01)
+    *this = other;
+  else
+    {
+      width = std::max(width, other.width);
+      height = std::max(height, other.height);
+      look_at = glm::vec3((look_at.x + other.look_at.x) / 2,
+                          (look_at.y + other.look_at.y) / 2,
+                          std::max(look_at.z, other.look_at.z));
+    }
+}
+

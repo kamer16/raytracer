@@ -23,6 +23,7 @@ public:
     using materials_t = std::vector<material*>;
 
     object() = default;
+    ~object();
     void translate(const glm::vec3& dir);
     void scale(const glm::vec3& vec);
     void rotate(float degrees, const glm::vec3& dir);
@@ -34,6 +35,14 @@ public:
     // This functions sets the render_type of each materials associated to the
     // object to the new render_type
     void set_render_mode(render_type type);
+
+    // Iterates over all triangles in object and returns closest polygon
+    // or negative value if none is found
+    float intersect_ray(glm::vec3& L, glm::vec3& ray);
+
+    // Iterate on all vertices and computes width, height and best location
+    // point.
+    boundary get_boundary();
 protected:
     materials_t materials_;
 private:
