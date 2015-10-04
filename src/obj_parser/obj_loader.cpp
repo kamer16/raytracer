@@ -309,7 +309,6 @@ obj_loader::compute_tangents(material_vnta& material)
             // Calculate handedness
             vertices[a].a.w = (dot(cross(n, tan), tan2[a]) < 0.0f) ? -1.0f : 1.0f;
         }
-
     }
 }
 
@@ -404,9 +403,9 @@ obj_loader::load_obj(std::string& file) -> object*
         current_mat = new material_vn;
         current_mat->set_render_type(render_type::material);
         // Check if mat already exists or not in resulting vector
-        current_mat->get_ambient() = glm::vec4(0.2, 0.2, 0.2, 1);
-        current_mat->get_diffuse() = glm::vec4(0.8, 0.8, 0.8, 1);
-        current_mat->get_specular() = glm::vec4(1.0, 1., 1., 1.);
+        current_mat->get_ambient() = glm::vec3(0.2, 0.2, 0.2);
+        current_mat->get_diffuse() = glm::vec3(0.8, 0.8, 0.8);
+        current_mat->get_specular() = glm::vec3(1.0, 1., 1.);
         res->add_material(current_mat);
     }
     // load indices into current_material

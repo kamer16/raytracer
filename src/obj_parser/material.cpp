@@ -34,19 +34,19 @@ material::material(render_type type)
 {
 }
 
-glm::vec4&
+glm::vec3&
 material::get_ambient()
 {
     return ambient_;
 }
 
-glm::vec4&
+glm::vec3&
 material::get_specular()
 {
     return specular_;
 }
 
-glm::vec4&
+glm::vec3&
 material::get_diffuse()
 {
     return diffuse_;

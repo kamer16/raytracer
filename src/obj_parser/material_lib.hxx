@@ -21,17 +21,18 @@ intersect_ray(material& mat, glm::vec3& eye, glm::vec3& look_at, glm::vec3& colo
       // Computing cross enables better results as using the average of 3
       // normals generates up ta 5% mistakes due to lack of float precision
       glm::vec3 n = glm::normalize(glm::cross(u, v));
-      float dot_val = glm::dot(n, glm::normalize(eye - look_at));
+      glm::vec3 eye_dir = glm::normalize(eye - look_at);
+      float dot_val = glm::dot(n, glm::normalize(eye_dir));
       // Ignore when ray is parallel to triangle or wrong side
       if (dot_val <= std::numeric_limits<float>::epsilon())
         continue;
       // Find intersection on plane
-      float r = glm::dot(n, eye - v0) / glm::dot(n, eye - look_at);
+      float r = glm::dot(n, eye - v0) / glm::dot(n, eye_dir);
       if (r <= 0.0f)
         continue;
 
       // The intersecting point
-      glm::vec3 p = eye - r * (eye - look_at);
+      glm::vec3 p = eye - r * (eye_dir);
       // A vector from two points on plane to compute s and t parameters based
       // on u and v coordinate system
       glm::vec3 w = p - v0;
@@ -43,13 +44,24 @@ intersect_ray(material& mat, glm::vec3& eye, glm::vec3& look_at, glm::vec3& colo
       // Check if point was in triangle
       if (t >= 0.0f && s >= 0.0f && t + s <= 1.0f)
         {
-          glm::vec3 interpolated_normal = glm::normalize(s * n1 + t * n2 + (1 - (t + s)) * n0);
-          dot_val = glm::dot(interpolated_normal, glm::normalize(eye - look_at));
+          glm::vec3 interpolated_normal = glm::normalize(s * n1 + t * n2 +
+                                                         (1 - (t + s)) * n0);
+          glm::vec3 light_dir = glm::normalize(eye_dir);
+          dot_val = glm::dot(interpolated_normal, light_dir);
           float new_dist = glm::distance(p, eye);
           if (new_dist < min_dist && dot_val > 0.0f)
             {
-              color = dot_val * glm::vec3((mat.get_ambient() + mat.get_diffuse()) *
-                                255.0f / 2.0f);
+              glm::vec3 reflect = glm::normalize(-light_dir + 2.f *
+                                  glm::dot(interpolated_normal, light_dir) *
+                                  interpolated_normal);
+              float dot_reflect = std::max(0.f, glm::dot(reflect, eye_dir));
+              color = (mat.get_ambient() * 0.2f +
+                      dot_val * mat.get_diffuse() * 0.8f+
+                      powf(dot_reflect, mat.get_shininess()) * 0.8f *
+                      mat.get_specular()) * 255.f;
+              color.x = std::min(255.f, color.x);
+              color.y = std::min(255.f, color.y);
+              color.z = std::min(255.f, color.z);
               min_dist =  new_dist;
             }
         }

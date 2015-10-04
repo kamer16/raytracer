@@ -41,10 +41,10 @@ scene::operator() (const tbb::blocked_range<unsigned>& r) const
       for (unsigned x = 0; x < x_res_; ++x)
         {
           // ray is the current pixel at (x, y) from bottom left
-          glm::vec3 ray = L + u * static_cast<float>(x) * w / x_res +
-                              v * static_cast<float>(y_res_ - y - 1) * h / y_res;
+          glm::vec3 ray = L + u * static_cast<float>(x + 0.5f) * w / x_res +
+                              v * static_cast<float>(0.5f + y_res_ - y - 1) * h / y_res;
           float min_dist = FLT_MAX;
-          glm::vec3 color(50, 50, 50);
+          glm::vec3 color(0, 0, 0);
           for (auto& o: objects_)
             {
               // dist == FLT_MAX when nothing was found

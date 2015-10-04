@@ -45,11 +45,11 @@ void material_lib::update_material(material_ptr mtl, std::string& token)
     else if (!token.compare("bump"))
         mtl->get_bump_path() = std::string(dir_ + unix_file(iss_));
     else if (!token.compare("Ka"))
-        mtl->get_ambient() = glm::vec4(make_vec3(iss_, "ambient_mat"), 1);
+        mtl->get_ambient() = make_vec3(iss_, "ambient_mat");
     else if (!token.compare("Kd"))
-        mtl->get_diffuse() = glm::vec4(make_vec3(iss_, "diffuse_mat"), 1);
+        mtl->get_diffuse() = make_vec3(iss_, "diffuse_mat");
     else if (!token.compare("Ks"))
-        mtl->get_specular() = glm::vec4(make_vec3(iss_, "specular_mat"), 1);
+        mtl->get_specular() = make_vec3(iss_, "specular_mat");
     else if (!token.compare("Ns"))
         mtl->get_shininess() = make_float(iss_, "shininess");
     else if (!token.compare("d"))

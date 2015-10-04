@@ -18,7 +18,7 @@ make_coordinate()
     indices.push_back(0); indices.push_back(1);
     vertices.push_back(vertex_v(vec3(0.0f, 0.0f, 0.0f   )));
     vertices.push_back(vertex_v(vec3(800.0f, 0.0f, 0.0f )));
-    mat->set_ambient(glm::vec4(1, 0, 0, 1));
+    mat->set_ambient(glm::vec3(1, 0, 0));
     coord->add_material(mat);
     }
 
@@ -29,7 +29,7 @@ make_coordinate()
     indices.push_back(0); indices.push_back(1);
     vertices.push_back(vertex_v(vec3(0.0f, 0.0f, 0.0f   )));
     vertices.push_back(vertex_v(vec3(0.0f, 800.0f, 0.0f )));
-    mat->set_ambient(glm::vec4(0, 1, 0, 1));
+    mat->set_ambient(glm::vec3(0, 1, 0));
     coord->add_material(mat);
     }
 
@@ -40,7 +40,7 @@ make_coordinate()
     indices.push_back(0); indices.push_back(1);
     vertices.push_back(vertex_v(vec3(0.0f, 0.0f, 0.0f   )));
     vertices.push_back(vertex_v(vec3(0.0f, 0.0f, 800.0f )));
-    mat->set_ambient(glm::vec4(0, 0, 1, 1));
+    mat->set_ambient(glm::vec3(0, 0, 1));
     coord->add_material(mat);
     }
 
@@ -65,7 +65,7 @@ make_quad_xy()
     vertices.push_back(vertex_vn(vec3( 1.0f, -1.0f, 0.0f), vec3(0.0f, 0.0f, 0.5f)));
     vertices.push_back(vertex_vn(vec3( 1.0f,  1.0f, 0.0f), vec3(0.0f, 0.5f, 0.0f)));
     vertices.push_back(vertex_vn(vec3(-1.0f,  1.0f, 0.0f), vec3(0.5f, 0.5f, 0.5f)));
-    mat->set_ambient(glm::vec4(0.3, 0.3, 0.1, 1));
+    mat->set_ambient(glm::vec3(0.3, 0.3, 0.1));
     quad_xy->add_material(mat);
     return quad_xy;
 }
@@ -88,7 +88,7 @@ make_quad_xz()
     vertices.push_back(vertex_vn(vec3( 9.5f, 0.0f, -9.5f), vec3(0.0f, 0.0f, 0.5f)));
     vertices.push_back(vertex_vn(vec3( 9.5f, 0.0f,  9.5f), vec3(0.0f, 0.5f, 0.0f)));
     vertices.push_back(vertex_vn(vec3(-9.5f, 0.0f,  9.5f), vec3(0.5f, 0.5f, 0.5f)));
-    mat->set_ambient(glm::vec4(0.1, 0.3, 0.3, 1));
+    mat->set_ambient(glm::vec3(0.1, 0.3, 0.3));
 
     quad_xz->add_material(mat);
     return quad_xz;
@@ -124,8 +124,8 @@ make_cube()
     vertices.push_back({ vec3(-0.5f, -0.5f, -0.5f), vec3(-1.0f, -1.0f, -1.0f) });
     vertices.push_back({ vec3(-0.5f, -0.5f,  0.5f), vec3(-1.0f, -1.0f, 1.0f) });
 
-    mat->set_ambient(glm::vec4(0.6, 0.4, 0.6, 1));
-    mat->set_diffuse(glm::vec4(0.6, 0.4, 0.6, 1));
+    mat->set_ambient(glm::vec3(0.6, 0.4, 0.6));
+    mat->set_diffuse(glm::vec3(0.6, 0.4, 0.6));
     cube->add_material(mat);
     return cube;
 }
@@ -170,7 +170,7 @@ make_sphere(unsigned stacks, unsigned slices, float radius)
         indices.push_back(i + 1);
     }
 
-    mat->set_ambient(glm::vec4(0.3, 0.8, 0.3, 1));
+    mat->set_ambient(glm::vec3(0.3, 0.8, 0.3));
     sphere->add_material(mat);
     return sphere;
 }
