@@ -1,4 +1,5 @@
 #include <vector>
+#include <tbb/parallel_for.h>
 
 #include "scene/scene.hpp"
 
@@ -21,7 +22,7 @@ scene::add_object(object* object)
 }
 
 void
-scene::render()
+scene::operator() (const tbb::blocked_range<unsigned>& r) const
 {
   float w = width_;
   float h = height_;
@@ -35,14 +36,13 @@ scene::render()
   // L is the bottom left of image
   glm::vec3 L = look_at - u * w / 2.0f - v * h / 2.0f;
 
-  std::vector<glm::vec3> res;
-  for (unsigned y = y_res_; y > 0; --y)
+  for (unsigned y = r.begin(); y != r.end(); ++y)
     {
       for (unsigned x = 0; x < x_res_; ++x)
         {
           // ray is the current pixel at (x, y) from bottom left
           glm::vec3 ray = L + u * static_cast<float>(x) * w / x_res +
-                              v * static_cast<float>(y - 1) * h / y_res;
+                              v * static_cast<float>(y_res_ - y - 1) * h / y_res;
           float min_dist = FLT_MAX;
           glm::vec3 color(50, 50, 50);
           for (auto& o: objects_)
@@ -57,21 +57,31 @@ scene::render()
                 }
             }
           // Note image is pushed backwards
-          res.push_back(color);
+          glm::vec3* res = const_cast<glm::vec3*>(res_.data());
+          res[x + static_cast<unsigned>(y) * x_res_] = color;
         }
     }
-  dump_to_file(res);
 }
 
 void
-scene::dump_to_file(std::vector<glm::vec3>& vect)
+scene::render()
+{
+  res_.resize(y_res_ * x_res_);
+  std::cout << "Raytracing image\n";
+  tbb::parallel_for(tbb::blocked_range<unsigned>(0, y_res_, 1), std::ref(*this));
+  std::cout << "Writting image to out.ppm\n";
+  dump_to_file();
+}
+
+void
+scene::dump_to_file() const
 {
   std::ofstream ofs;
   ofs.open("out.ppm");
   ofs << "P3" << std::endl;
   ofs << x_res_ << ' ' << y_res_ << std::endl;
   ofs << 255 << std::endl;
-  for (auto& vec: vect)
+  for (auto& vec: res_)
     ofs << roundf(vec.x) << "\t" << roundf(vec.y) << "\t" << roundf(vec.z)
         << std::endl;
   ofs.close();

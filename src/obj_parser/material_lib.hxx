@@ -8,12 +8,13 @@ intersect_ray(material& mat, glm::vec3& eye, glm::vec3& look_at, glm::vec3& colo
   float min_dist = FLT_MAX;
   for (unsigned i = 0; i < indices.size(); i += 3)
     {
-      glm::vec3 v0 = vertices[indices[i]].v;
-      glm::vec3 v1 = vertices[indices[i + 1]].v;
-      glm::vec3 v2 = vertices[indices[i + 2]].v;
+      const glm::vec3& v0 = vertices[indices[i]].v;
+      const glm::vec3& v1 = vertices[indices[i + 1]].v;
+      const glm::vec3& v2 = vertices[indices[i + 2]].v;
       // compute normal of triangle to determine it's plane
       glm::vec3 u = v1 - v0;
       glm::vec3 v = v2 - v0;
+      // Computing cross seems faster than averaging 3 normals
       glm::vec3 n = glm::cross(u, v);
       float dot_val = fabsf(glm::dot(glm::normalize(n), glm::normalize(look_at - eye)));
       // Ignore when ray is parallel to triangle

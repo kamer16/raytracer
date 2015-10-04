@@ -1,3 +1,5 @@
+#include <tbb/task_scheduler_init.h>
+
 #include "obj_parser/obj_loader.hpp"
 #include "scene/scene.hpp"
 
@@ -5,9 +7,10 @@ int main(int argc, char* argv[])
 {
   if (argc <= 1)
     return 1;
+  tbb::task_scheduler_init init;
   std::string obj_file(argv[1]);
-  unsigned int x_res = 100;
-  unsigned int y_res = 100;
+  unsigned int x_res = 200;
+  unsigned int y_res = 200;
 
   obj_loader loader;
   object* obj = loader.load_obj(obj_file);

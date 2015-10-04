@@ -41,26 +41,26 @@ camera::get_view_mat()
     return view_mat_;
 }
 
-glm::vec3
-camera::get_pos_vec()
+const glm::vec3&
+camera::get_pos_vec() const
 {
     return position_;
 }
 
 glm::vec3
-camera::get_look_at()
+camera::get_look_at() const
 {
     return position_ - backward_ * plane_dist_;
 }
 
 const glm::vec3&
-camera::get_right()
+camera::get_right() const
 {
     return right_;
 }
 
 const glm::vec3&
-camera::get_up()
+camera::get_up() const
 {
     return up_;
 }

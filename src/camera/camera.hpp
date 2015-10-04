@@ -17,10 +17,10 @@ public:
     // Used for OpenGL might need it in future
     const glm::mat4& get_view_mat();
     // Return the coordonate of camera
-    glm::vec3 get_pos_vec();
-    glm::vec3 get_look_at();
-    const glm::vec3& get_right();
-    const glm::vec3& get_up();
+    const glm::vec3& get_pos_vec() const;
+    glm::vec3 get_look_at() const;
+    const glm::vec3& get_right() const;
+    const glm::vec3& get_up() const;
 
 private:
     glm::mat4 proj_mat_;

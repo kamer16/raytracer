@@ -4,7 +4,7 @@ CXX = clang++
 CXXFLAGS = -Wall -Wextra -std=c++11 -Wconversion -g -O3 -Weverything \
 	   -Wsign-conversion -Wno-c++98-compat -Wno-padded -Wno-documentation
 CPPFLAGS = -I ${PWD}/src/
-LDFLAGS =
+LDFLAGS = -ltbb
 
 TARGET=raytracer
 

@@ -345,6 +345,7 @@ bool sort_materials(material* left, material* right)
 auto
 obj_loader::load_obj(std::string& file) -> object*
 {
+    std::cout << "Loading .obj file: " << file << '\n';
     material* current_mat = nullptr;
     material_lib mat_lib(file.substr(0, file.find_last_of('/') + 1));
 

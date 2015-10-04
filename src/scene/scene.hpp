@@ -5,6 +5,7 @@
 
 # include <glm/glm.hpp>
 # include <glm/gtc/type_ptr.hpp> /* value_ptr */
+#include <tbb/blocked_range.h>
 
 # include <memory>
 
@@ -27,7 +28,8 @@ public:
     void add_light(light_t* light);
     // This does a ray tracing on all objects and print result in  out.ppm
     void render();
-    void dump_to_file(std::vector<glm::vec3>& vect);
+    void dump_to_file() const;
+    void operator() (const tbb::blocked_range<unsigned>& r) const;
 
 private:
     camera camera_;
@@ -45,6 +47,7 @@ private:
     // resolution of image along x and y axis (number of pixels)
     unsigned x_res_;
     unsigned y_res_;
+    std::vector<glm::vec3> res_;
 };
 
 # include "scene/scene.hxx"
