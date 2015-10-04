@@ -40,7 +40,8 @@ public:
     // Reads an Obj files and stores vertices, normals, and texture coords.
     // A simple call to glDrawArarys will render the object.
     object* load_obj(std::string& file);
-    obj_loader(bool draw_line = true)
+    // If draw_line is true then normals are not computed
+    obj_loader(bool draw_line = false)
         : draw_lines_(draw_line)
     { }
 

@@ -85,6 +85,7 @@ protected:
 
 public:
     // Hack to know when we use material_v
+    // want_normal = true => normals will be computed from vertices
     bool want_normal = true;
 };
 
@@ -112,13 +113,14 @@ private:
 class material_v : public material
 {
 public:
+    // want_normal = true => normals will be computed from vertices
     material_v()
-    { want_normal = false; }
+    { want_normal = true; }
     material_v(material_v&)
-    { want_normal = false; }
+    { want_normal = true; }
     material_v(material& parent)
         : material(parent)
-    { want_normal = false; }
+    { want_normal = true; }
     using container_v = std::vector<utility::vertex_v>;
     using value_type = utility::vertex_v;
     container_v& get_vertices();
