@@ -19,7 +19,7 @@ intersect_ray(material& mat, glm::vec3& eye, glm::vec3& look_at, glm::vec3& colo
       glm::vec3 u = v1 - v0;
       glm::vec3 v = v2 - v0;
       // Computing cross enables better results as using the average of 3
-      // normals generates up ta 5% mistakes due to lack of float precision
+      // normals generates up ta 5% mistakes due to innacurate normal
       glm::vec3 n = glm::normalize(glm::cross(u, v));
       glm::vec3 eye_dir = glm::normalize(eye - look_at);
       float dot_val = glm::dot(n, glm::normalize(eye_dir));

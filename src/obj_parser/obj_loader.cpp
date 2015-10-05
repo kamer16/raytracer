@@ -159,9 +159,12 @@ obj_loader::compute_normals(char flat_shading)
         size_t idx1 = indices_[i -  2].v - 1;
         size_t idx2 = indices_[i -  1].v - 1;
         size_t idx3 = indices_[i].v - 1;
-        const glm::vec3& v1 = vertices_[idx1];
-        const glm::vec3& v2 = vertices_[idx2];
-        const glm::vec3& v3 = vertices_[idx3];
+        // By multiplying by a constant we increase the variance which helps
+        // compute the normals as we don't create vectors close to (0.,0.,0.)
+        float cste = 1000.f;
+        const glm::vec3& v1 = vertices_[idx1] * cste;
+        const glm::vec3& v2 = vertices_[idx2] * cste;
+        const glm::vec3& v3 = vertices_[idx3] * cste;
         normals_count[idx1]++;
         normals_count[idx2]++;
         normals_count[idx3]++;
