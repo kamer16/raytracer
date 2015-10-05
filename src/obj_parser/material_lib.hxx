@@ -44,28 +44,31 @@ intersect_ray(material& mat, glm::vec3& eye, glm::vec3& look_at, glm::vec3& colo
       // Check if point was in triangle
       if (t >= 0.0f && s >= 0.0f && t + s <= 1.0f)
         {
+          // Light projects (0.2f, 0.8f, 0.8f) of (ambient, diffuse, specular)
           glm::vec3 interpolated_normal = glm::normalize(s * n1 + t * n2 +
                                                          (1 - (t + s)) * n0);
-          glm::vec3 light_dir = glm::normalize(eye_dir);
+          // Choose an arbitrary light direction, should use light class (TODO)
+          glm::vec3 light_dir = glm::normalize(glm::vec3(0.3f, 0.3f, 0.3f));
           dot_val = glm::dot(interpolated_normal, light_dir);
           float new_dist = glm::distance(p, eye);
-          if (new_dist < min_dist && dot_val > 0.0f)
+          if (new_dist < min_dist)
             {
               glm::vec3 reflect = glm::normalize(-light_dir + 2.f *
                                   glm::dot(interpolated_normal, light_dir) *
                                   interpolated_normal);
               float dot_reflect = std::max(0.f, glm::dot(reflect, eye_dir));
-              color = (mat.get_ambient() * 0.2f +
-                      dot_val * mat.get_diffuse() * 0.8f+
-                      powf(dot_reflect, mat.get_shininess()) * 0.8f *
-                      mat.get_specular()) * 255.f;
-              color.x = std::min(255.f, color.x);
-              color.y = std::min(255.f, color.y);
-              color.z = std::min(255.f, color.z);
+              color = mat.get_ambient() * 0.2f * 255.f;
+              if (dot_val > 0.0f)
+                color += (dot_val * mat.get_diffuse() * 0.8f+
+                          powf(dot_reflect, mat.get_shininess()) * 0.8f *
+                          mat.get_specular()) * 255.f;
               min_dist =  new_dist;
             }
         }
     }
+  color.x = std::min(255.f, color.x);
+  color.y = std::min(255.f, color.y);
+  color.z = std::min(255.f, color.z);
 
   return min_dist;
 }
