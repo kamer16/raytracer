@@ -9,7 +9,7 @@ dir_light* light_dir_default_new()
     glm::vec3 ambient(0.2f, 0.2f, 0.2f);
     glm::vec3 diffuse(light_color);
     glm::vec3 specular(light_color);
-    glm::vec3 pos(0.0f, 0.0f, 1.0f);
+    glm::vec3 pos(1.0f, 1.0f, 1.0f);
     res->set_ambient(ambient);
     res->set_diffuse(diffuse);
     res->set_specular(specular);
@@ -20,11 +20,11 @@ dir_light* light_dir_default_new()
 pos_light* light_pos_default_new()
 {
     pos_light* res = new pos_light;
-    glm::vec3 light_color(0.0f, 1.0f, 0.0);
-    glm::vec3 ambient(0.0f, 0.0f, 0.0f);
+    glm::vec3 light_color(0.8f, 0.8f, 0.8f);
+    glm::vec3 ambient(0.25f, 0.25f, 0.25f);
     glm::vec3 diffuse(light_color);
     glm::vec3 specular(light_color);
-    glm::vec3 pos(80.0f, 10.0f, 0.0f);
+    glm::vec3 pos(0.0f, 0.3f, 0.4f);
     res->set_ambient(ambient);
     res->set_diffuse(diffuse);
     res->set_specular(specular);

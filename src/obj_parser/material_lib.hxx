@@ -21,17 +21,17 @@ intersect_ray(material& mat, glm::vec3& eye_pos, glm::vec3& eye_dir)
       // Computing cross enables better results as using the average of 3
       // normals generates up ta 5% mistakes due to innacurate normal
       glm::vec3 n = glm::normalize(glm::cross(u, v));
-      float dot_val = glm::dot(n, glm::normalize(eye_dir));
+      float dot_val = -glm::dot(n, glm::normalize(eye_dir));
       // Ignore when ray is parallel to triangle or wrong side
       if (dot_val <= std::numeric_limits<float>::epsilon())
         continue;
       // Find intersection on plane
-      float r = glm::dot(n, eye_pos - v0) / glm::dot(n, eye_dir);
+      float r = -glm::dot(n, eye_pos - v0) / glm::dot(n, eye_dir);
       if (r <= 0.0f)
         continue;
 
       // The intersecting point
-      glm::vec3 p = eye_pos - r * (eye_dir);
+      glm::vec3 p = eye_pos + r * (eye_dir);
       // A vector from two points on plane to compute s and t parameters based
       // on u and v coordinate system
       glm::vec3 w = p - v0;
@@ -50,7 +50,7 @@ intersect_ray(material& mat, glm::vec3& eye_pos, glm::vec3& eye_dir)
             {
               res.dist = new_dist;
               res.norm = interpolated_normal;
-              res.pos = v0 + s * v1 + t * v2;
+              res.pos = v0 + s * u + t * v;
               res.mat = &mat;
             }
         }

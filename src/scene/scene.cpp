@@ -41,19 +41,19 @@ scene::operator() (const tbb::blocked_range<unsigned>& r) const
     {
       for (unsigned x = 0; x < x_res_; ++x)
         {
-          // ray is the current pixel at (x, y) from bottom left
-          glm::vec3 ray = L + u * static_cast<float>(x + 0.5f) * w / x_res +
+          // eye_look is the current pixel at (x, y) from bottom left
+          glm::vec3 eye_look = L + u * static_cast<float>(x + 0.5f) * w / x_res +
                               v * static_cast<float>(0.5f + y_res_ - y - 1) *
                                   h / y_res;
 
           unsigned idx = x + static_cast<unsigned>(y) * x_res_;
-          auto dir = glm::normalize(eye - ray);
-          res[idx] = sample_pixel(eye, dir, 0);
+          auto dir = glm::normalize(eye_look - eye);
+          res[idx] = sample_pixel(eye, dir, 4);
         }
     }
 }
 
-// dir points towards objects and object normal are in opposite direction
+// dir points towards objects
 glm::vec3
 scene::sample_pixel(glm::vec3& pos, glm::vec3& dir, unsigned depth) const
 {
@@ -64,10 +64,15 @@ scene::sample_pixel(glm::vec3& pos, glm::vec3& dir, unsigned depth) const
     return (color);
 
   // reflective vector wrt dir
-  glm::vec3 reflect = glm::normalize(-dir + 2.f * glm::dot(v.norm, dir) * v.norm);
+  glm::vec3 reflect = glm::normalize(dir - 2.f * glm::dot(v.norm, dir) * v.norm);
   // Compute reflected color
   if (depth)
-      color += v.mat->get_specular() * sample_pixel(v.pos, reflect, depth - 1);
+    {
+      // Offset pos slightly to avoid numerical errors otherwise we might
+      // intersect with ourself
+      auto p = v.pos + 0.01f * reflect;
+      color += v.mat->get_specular() * sample_pixel(p, reflect, depth - 1);
+    }
   for (const auto& l: dir_lights_)
     {
       color += v.mat->get_ambient() * l->get_ambient();
@@ -76,6 +81,27 @@ scene::sample_pixel(glm::vec3& pos, glm::vec3& dir, unsigned depth) const
         {
           float dot_reflect = std::max(0.f, glm::dot(reflect,
                                                       l->get_position()));
+          color += dot_diffuse * v.mat->get_diffuse() * l->get_diffuse();
+          color += powf(dot_reflect, v.mat->get_shininess()) *
+                   l->get_specular() * v.mat->get_specular();
+        }
+    }
+  for (const auto& l: pos_lights_)
+    {
+      // Cheat since inderect lighting is not handled
+      color += v.mat->get_ambient() * l->get_ambient();
+
+      glm::vec3 light_dir = glm::normalize(l->get_position() - v.pos);
+
+      auto p = l->get_position(); auto d = -light_dir;
+      voxel c = intersect_ray(p, d);
+      if (c.dist + 0.01f < glm::distance(l->get_position(), v.pos))
+        continue;
+
+      float dot_diffuse = glm::dot(v.norm, light_dir);
+      if (dot_diffuse > 0.0f)
+        {
+          float dot_reflect = std::max(0.f, glm::dot(reflect, light_dir));
           color += dot_diffuse * v.mat->get_diffuse() * l->get_diffuse();
           color += powf(dot_reflect, v.mat->get_shininess()) *
                    l->get_specular() * v.mat->get_specular();

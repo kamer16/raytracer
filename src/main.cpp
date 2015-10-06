@@ -9,21 +9,23 @@ int main(int argc, char* argv[])
     return 1;
   tbb::task_scheduler_init init;
   std::string obj_file(argv[1]);
-  unsigned int x_res = 200;
-  unsigned int y_res = 200;
 
   obj_loader loader;
   object* obj = loader.load_obj(obj_file);
   auto boundary = obj->get_boundary();
+  unsigned y_res = 600;
+  unsigned x_res = static_cast<unsigned>((boundary.width / boundary.height) * y_res);
   scene scenery(boundary, x_res, y_res);
-  dir_light* light = light_dir_default_new();
+  dir_light* d_light = light_dir_default_new();
+  pos_light* p_light = light_pos_default_new();
 
   scenery.add_object(obj);
-  scenery.add_light(light);
+  scenery.add_light(p_light);
 
   // This does a ray tracing on all objects and print result in  out.ppm
   scenery.render();
 
   delete obj;
-  delete light;
+  delete d_light;
+  delete p_light;
 }
