@@ -48,9 +48,12 @@ public:
     index_map& get_idx_lut();
 
     virtual boundary get_boundary();
-    virtual float intersect_ray(glm::vec3& L, glm::vec3& ray, glm::vec3& color);
+    virtual voxel intersect_ray(glm::vec3& L, glm::vec3& ray);
     virtual ~material() = default;
 private:
+    // TODO anmbient_ is a cheat and only needed when inderected lighting is not
+    // computed, otherwise object only has diffuse color and shininess factor
+    // and specular_ factor.
     // Ns
     float shininess = 0.0f;
     // Ka
@@ -102,8 +105,7 @@ public:
     static const bool has_texture = 1;
     static const bool has_adjacent = 0;
 
-    virtual float intersect_ray(glm::vec3& L, glm::vec3& ray,
-                                glm::vec3& color) override;
+    virtual voxel intersect_ray(glm::vec3& L, glm::vec3& ray) override;
     virtual boundary get_boundary() override;
     virtual ~material_vnt() = default;
 private:
@@ -129,8 +131,7 @@ public:
     static const bool has_adjacent = 0;
 
     virtual boundary get_boundary() override;
-    virtual float intersect_ray(glm::vec3& L, glm::vec3& ray,
-                                glm::vec3& color) override;
+    virtual voxel intersect_ray(glm::vec3& L, glm::vec3& ray) override;
     virtual ~material_v() = default;
 private:
     container_v vertices_v;
@@ -151,8 +152,7 @@ public:
     static const bool has_adjacent = 0;
 
     virtual boundary get_boundary() override;
-    virtual float intersect_ray(glm::vec3& L, glm::vec3& ray,
-                                glm::vec3& color) override;
+    virtual voxel intersect_ray(glm::vec3& L, glm::vec3& ray) override;
     virtual ~material_vn() = default;
 private:
     container_vn vertices_vn;
@@ -173,8 +173,7 @@ public:
     static const bool has_adjacent = 1;
 
     virtual boundary get_boundary() override;
-    virtual float intersect_ray(glm::vec3& L, glm::vec3& ray,
-                                glm::vec3& color) override;
+    virtual voxel intersect_ray(glm::vec3& L, glm::vec3& ray) override;
     virtual ~material_vnta() = default;
 private:
     container_vnta vertices_vnta;

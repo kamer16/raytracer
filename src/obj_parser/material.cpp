@@ -110,12 +110,11 @@ material::set_render_type(render_type type)
     render_type_ = type;
 }
 
-float
-material::intersect_ray(glm::vec3& L, glm::vec3& ray, glm::vec3& color)
+voxel
+material::intersect_ray(glm::vec3& L, glm::vec3& ray)
 {
   (void) ray;
   (void) L;
-  (void) color;
   // Ideally this class should be virtual void, however obj_loading uses a hack
   // that needs to first instanciate a metrial class, as at the time of
   // creation, obj_loader does not know what type of material to create.
@@ -135,28 +134,28 @@ material::get_boundary()
   exit(1);
 }
 
-float
-material_v::intersect_ray(glm::vec3& L, glm::vec3& look_at, glm::vec3& color)
+voxel
+material_v::intersect_ray(glm::vec3& L, glm::vec3& look_at)
 {
-  return ::intersect_ray(*this, L, look_at, color);
+  return ::intersect_ray(*this, L, look_at);
 }
 
-float
-material_vn::intersect_ray(glm::vec3& L, glm::vec3& look_at, glm::vec3& color)
+voxel
+material_vn::intersect_ray(glm::vec3& L, glm::vec3& look_at)
 {
-  return ::intersect_ray(*this, L, look_at, color);
+  return ::intersect_ray(*this, L, look_at);
 }
 
-float
-material_vnt::intersect_ray(glm::vec3& L, glm::vec3& look_at, glm::vec3& color)
+voxel
+material_vnt::intersect_ray(glm::vec3& L, glm::vec3& look_at)
 {
-  return ::intersect_ray(*this, L, look_at, color);
+  return ::intersect_ray(*this, L, look_at);
 }
 
-float
-material_vnta::intersect_ray(glm::vec3& L, glm::vec3& look_at, glm::vec3& color)
+voxel
+material_vnta::intersect_ray(glm::vec3& L, glm::vec3& look_at)
 {
-  return ::intersect_ray(*this, L, look_at, color);
+  return ::intersect_ray(*this, L, look_at);
 }
 
 boundary

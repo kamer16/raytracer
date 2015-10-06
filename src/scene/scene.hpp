@@ -28,9 +28,14 @@ public:
     void add_light(light_t* light);
     // This does a ray tracing on all objects and print result in  out.ppm
     void render();
-    void dump_to_file() const;
+    // Used by tbb::parallel_for
     void operator() (const tbb::blocked_range<unsigned>& r) const;
 
+private:
+    glm::vec3 sample_pixel(glm::vec3& eye, glm::vec3& ray,
+                             unsigned depth) const;
+    void dump_to_file() const;
+    voxel intersect_ray(glm::vec3& pos, glm::vec3& dir) const;
 private:
     camera camera_;
 

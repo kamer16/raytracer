@@ -19,6 +19,7 @@ public:
     void set_specular(glm::vec3& specular) { specular_ = specular; }
     void set_position(glm::vec3& position) { position_ = position; }
 protected:
+    // TODO a light should only have a color and an intensity
     glm::vec3 ambient_;
     glm::vec3 diffuse_;
     glm::vec3 specular_;

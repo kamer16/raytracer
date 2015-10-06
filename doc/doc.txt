@@ -1,2 +1,6 @@
 http://web.cse.ohio-state.edu/~hwshen/681/Site/Slides_files/basic_algo.pdf
 http://www.cs.princeton.edu/courses/archive/fall06/cos526/tmp/wynn.pdf
+
+# Bidirectional ray tracing
+https://graphics.stanford.edu/courses/cs348b-03/papers/veach-chapter10.pdf
+http://www.cs.jhu.edu/~misha/ReadingSeminar/Papers/Veach94.pdf

@@ -50,23 +50,6 @@ object::set_render_mode(render_type type)
         mat->set_render_type(type);
 }
 
-float
-object::intersect_ray(glm::vec3& L, glm::vec3& ray, glm::vec3& color)
-{
-  float min_dist = FLT_MAX;
-  for (auto& mat : materials_)
-    {
-      glm::vec3 tmp_color;
-      float dist = mat->intersect_ray(L, ray, tmp_color);
-      if (dist > 0 && min_dist > dist)
-        {
-          min_dist = dist;
-          color = tmp_color;
-        }
-    }
-  return min_dist;
-}
-
 boundary
 object::get_boundary()
 {

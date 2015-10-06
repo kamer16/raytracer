@@ -29,6 +29,15 @@ struct boundary
   void merge(boundary&& other);
 };
 
+class material;
+struct voxel
+{
+  material* mat = nullptr;
+  float dist = FLT_MAX;
+  glm::vec3 norm = glm::vec3(0.f, 0.f, 0.f);
+  glm::vec3 pos = glm::vec3(0.f, 0.f, 0.f);
+};
+
 
 class hash_ptr
 {

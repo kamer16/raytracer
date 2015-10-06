@@ -1,11 +1,11 @@
 template<class material>
-float
-intersect_ray(material& mat, glm::vec3& eye, glm::vec3& look_at, glm::vec3& color)
+voxel
+intersect_ray(material& mat, glm::vec3& eye_pos, glm::vec3& eye_dir)
 {
   using vertex_t = typename material::value_type;
   const std::vector<vertex_t>& vertices = mat.get_vertices();
   const auto& indices = mat.get_indices();
-  float min_dist = FLT_MAX;
+  voxel res;
   for (unsigned i = 0; i < indices.size(); i += 3)
     {
       const glm::vec3& v0 = vertices[indices[i]].v;
@@ -21,18 +21,17 @@ intersect_ray(material& mat, glm::vec3& eye, glm::vec3& look_at, glm::vec3& colo
       // Computing cross enables better results as using the average of 3
       // normals generates up ta 5% mistakes due to innacurate normal
       glm::vec3 n = glm::normalize(glm::cross(u, v));
-      glm::vec3 eye_dir = glm::normalize(eye - look_at);
       float dot_val = glm::dot(n, glm::normalize(eye_dir));
       // Ignore when ray is parallel to triangle or wrong side
       if (dot_val <= std::numeric_limits<float>::epsilon())
         continue;
       // Find intersection on plane
-      float r = glm::dot(n, eye - v0) / glm::dot(n, eye_dir);
+      float r = glm::dot(n, eye_pos - v0) / glm::dot(n, eye_dir);
       if (r <= 0.0f)
         continue;
 
       // The intersecting point
-      glm::vec3 p = eye - r * (eye_dir);
+      glm::vec3 p = eye_pos - r * (eye_dir);
       // A vector from two points on plane to compute s and t parameters based
       // on u and v coordinate system
       glm::vec3 w = p - v0;
@@ -44,90 +43,32 @@ intersect_ray(material& mat, glm::vec3& eye, glm::vec3& look_at, glm::vec3& colo
       // Check if point was in triangle
       if (t >= 0.0f && s >= 0.0f && t + s <= 1.0f)
         {
-          // Light projects (0.2f, 0.8f, 0.8f) of (ambient, diffuse, specular)
           glm::vec3 interpolated_normal = glm::normalize(s * n1 + t * n2 +
                                                          (1 - (t + s)) * n0);
-          // Choose an arbitrary light direction, should use light class (TODO)
-          glm::vec3 light_dir = glm::normalize(glm::vec3(0.3f, 0.3f, 0.3f));
-          dot_val = glm::dot(interpolated_normal, light_dir);
-          float new_dist = glm::distance(p, eye);
-          if (new_dist < min_dist)
+          float new_dist = glm::distance(p, eye_pos);
+          if (new_dist < res.dist)
             {
-              glm::vec3 reflect = glm::normalize(-light_dir + 2.f *
-                                  glm::dot(interpolated_normal, light_dir) *
-                                  interpolated_normal);
-              float dot_reflect = std::max(0.f, glm::dot(reflect, eye_dir));
-              color = mat.get_ambient() * 0.2f * 255.f;
-              if (dot_val > 0.0f)
-                color += (dot_val * mat.get_diffuse() * 0.8f+
-                          powf(dot_reflect, mat.get_shininess()) * 0.8f *
-                          mat.get_specular()) * 255.f;
-              min_dist =  new_dist;
+              res.dist = new_dist;
+              res.norm = interpolated_normal;
+              res.pos = v0 + s * v1 + t * v2;
+              res.mat = &mat;
             }
         }
     }
-  color.x = std::min(255.f, color.x);
-  color.y = std::min(255.f, color.y);
-  color.z = std::min(255.f, color.z);
 
-  return min_dist;
+  return res;
 }
 
 // Temporary function
 template<>
-inline float
-intersect_ray<material_v>(material_v& mat, glm::vec3& eye, glm::vec3& look_at,
-                          glm::vec3& color)
+inline voxel
+intersect_ray<material_v>(material_v& mat, glm::vec3& eye, glm::vec3& look_at)
 {
+  (void) mat;
+  (void) eye;
+  (void) look_at;
   assert(0 && "This function should not be called and will be removed in future");
   exit(1);
-  using vertex_t = typename material_v::value_type;
-  const std::vector<vertex_t> vertices = mat.get_vertices();
-  auto& indices = mat.get_indices();
-  float min_dist = FLT_MAX;
-  for (unsigned i = 0; i < indices.size(); i += 3)
-    {
-      const glm::vec3& v0 = vertices[indices[i]].v;
-      const glm::vec3& v1 = vertices[indices[i + 1]].v;
-      const glm::vec3& v2 = vertices[indices[i + 2]].v;
-      // compute normal of triangle to determine it's plane
-      glm::vec3 u = v1 - v0;
-      glm::vec3 v = v2 - v0;
-      // Computing cross seems faster than averaging 3 normals
-      glm::vec3 n = glm::cross(u, v);
-      float dot_val = fabsf(glm::dot(glm::normalize(n), glm::normalize(look_at - eye)));
-      // Ignore when ray is parallel to triangle
-      if (dot_val <= std::numeric_limits<float>::epsilon())
-        continue;
-      // Find intersection on plane
-      float r = glm::dot(n, v0 - eye) / glm::dot(n, look_at - eye);
-      if (r <= 0.0f)
-        continue;
-
-      // The intersecting point
-      glm::vec3 p = eye + r * (look_at - eye);
-      // A vector from two points on plane to compute s and t parameters based
-      // on u and v coordinate system
-      glm::vec3 w = p - v0;
-      float div = powf(glm::dot(u, v), 2) - glm::dot(u, u) * glm::dot(v, v);
-      float s = glm::dot(u, v) * glm::dot(w, v) - glm::dot(v, v) * glm::dot(w, u);
-      s /= div;
-      float t = glm::dot(u, v) * glm::dot(w, u) - glm::dot(u, u) * glm::dot(w, v);
-      t /= div;
-      // Check if point was in triangle
-      if (t >= 0.0f && s >= 0.0f && t + s <= 1.0f)
-        {
-          float new_dist = glm::distance(p, eye);
-          if (new_dist < min_dist)
-            {
-              color = dot_val * glm::vec3((mat.get_ambient() + mat.get_diffuse()) *
-                                255.0f / 2.0f);
-              min_dist =  new_dist;
-            }
-        }
-    }
-
-  return min_dist;
 }
 
 

@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
   object* obj = loader.load_obj(obj_file);
   auto boundary = obj->get_boundary();
   scene scenery(boundary, x_res, y_res);
-  pos_light* light = light_pos_default_new();
+  dir_light* light = light_dir_default_new();
 
   scenery.add_object(obj);
   scenery.add_light(light);
