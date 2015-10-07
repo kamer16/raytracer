@@ -2,6 +2,7 @@
 # define RENDER_SCENE_CPP
 
 # include <vector>
+# include <atomic>
 
 # include <glm/glm.hpp>
 # include <glm/gtc/type_ptr.hpp> /* value_ptr */
@@ -53,6 +54,7 @@ private:
     unsigned x_res_;
     unsigned y_res_;
     std::vector<glm::vec3> res_;
+    static std::atomic<unsigned short> counter;
 };
 
 # include "scene/scene.hxx"

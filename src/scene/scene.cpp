@@ -3,6 +3,8 @@
 
 #include "scene/scene.hpp"
 
+std::atomic<unsigned short> scene::counter(0);
+
 // Passing bound.width to camera is a good estimate to place camera a distance
 // of bound.width to look_at point
 scene::scene(boundary& bound,
@@ -51,6 +53,12 @@ scene::operator() (const tbb::blocked_range<unsigned>& r) const
           res[idx] = sample_pixel(eye, dir, 4);
         }
     }
+
+  scene::counter.fetch_add(static_cast<unsigned short>(r.end() - r.begin()));
+  short n0 = static_cast<short>(100.f * (scene::counter - 1) / y_res_);
+  short n1 = static_cast<short>(100.f * (scene::counter) / y_res_);
+  if (n0 != n1)
+    (std::cout << n1 << ' ').flush();
 }
 
 // dir points towards objects
@@ -134,10 +142,11 @@ scene::intersect_ray(glm::vec3& pos, glm::vec3& dir) const
 void
 scene::render()
 {
+  scene::counter = 0;
   res_.resize(y_res_ * x_res_);
   std::cout << "Raytracing image\n";
   tbb::parallel_for(tbb::blocked_range<unsigned>(0, y_res_, 1), std::ref(*this));
-  std::cout << "Writting image to out.ppm\n";
+  std::cout << "\nWritting image to out.ppm\n";
   dump_to_file();
 }
 
