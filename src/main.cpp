@@ -13,8 +13,8 @@ int main(int argc, char* argv[])
   obj_loader loader;
   object* obj = loader.load_obj(obj_file);
   auto boundary = obj->get_boundary();
-  unsigned y_res = 600;
-  unsigned x_res = static_cast<unsigned>((boundary.width / boundary.height) * y_res);
+  unsigned int y_res = 600;
+  unsigned int x_res = static_cast<unsigned int>((boundary.width / boundary.height) * y_res);
   scene scenery(boundary, x_res, y_res);
   dir_light* d_light = light_dir_default_new();
   pos_light* p_light = light_pos_default_new();

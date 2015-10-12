@@ -8,7 +8,7 @@ std::atomic<unsigned short> scene::counter(0);
 // Passing bound.width to camera is a good estimate to place camera a distance
 // of bound.width to look_at point
 scene::scene(boundary& bound,
-             unsigned x_res, unsigned y_res)
+             unsigned int x_res, unsigned int y_res)
     : camera_(bound.look_at, bound.width),
       width_(bound.width),
       height_(bound.height),
@@ -24,7 +24,7 @@ scene::add_object(object* object)
 }
 
 void
-scene::operator() (const tbb::blocked_range<unsigned>& r) const
+scene::operator() (const tbb::blocked_range<unsigned int>& r) const
 {
   float w = width_;
   float h = height_;
@@ -39,16 +39,16 @@ scene::operator() (const tbb::blocked_range<unsigned>& r) const
   glm::vec3 L = look_at - u * w / 2.0f - v * h / 2.0f;
 
   glm::vec3* res = const_cast<glm::vec3*>(res_.data());
-  for (unsigned y = r.begin(); y != r.end(); ++y)
+  for (unsigned int y = r.begin(); y != r.end(); ++y)
     {
-      for (unsigned x = 0; x < x_res_; ++x)
+      for (unsigned int x = 0; x < x_res_; ++x)
         {
           // eye_look is the current pixel at (x, y) from bottom left
           glm::vec3 eye_look = L + u * static_cast<float>(x + 0.5f) * w / x_res +
                               v * static_cast<float>(0.5f + y_res_ - y - 1) *
                                   h / y_res;
 
-          unsigned idx = x + static_cast<unsigned>(y) * x_res_;
+          unsigned int idx = x + static_cast<unsigned int>(y) * x_res_;
           auto dir = glm::normalize(eye_look - eye);
           res[idx] = sample_pixel(eye, dir, 4);
         }
@@ -63,7 +63,7 @@ scene::operator() (const tbb::blocked_range<unsigned>& r) const
 
 // dir points towards objects
 glm::vec3
-scene::sample_pixel(glm::vec3& pos, glm::vec3& dir, unsigned depth) const
+scene::sample_pixel(glm::vec3& pos, glm::vec3& dir, unsigned int depth) const
 {
   glm::vec3 color(0.f, 0.f, 0.f);
   voxel v = intersect_ray(pos, dir);
@@ -145,7 +145,7 @@ scene::render()
   scene::counter = 0;
   res_.resize(y_res_ * x_res_);
   std::cout << "Raytracing image\n";
-  tbb::parallel_for(tbb::blocked_range<unsigned>(0, y_res_, 1), std::ref(*this));
+  tbb::parallel_for(tbb::blocked_range<unsigned int>(0, y_res_, 1), std::ref(*this));
   std::cout << "\nWritting image to out.ppm\n";
   dump_to_file();
 }

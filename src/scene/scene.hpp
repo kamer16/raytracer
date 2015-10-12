@@ -23,18 +23,18 @@ public:
     using spot_lights = std::vector<spot_light*>;
     using objects = std::vector<object*>;
 
-    scene(boundary& bound, unsigned x_res, unsigned y_res);
+    scene(boundary& bound, unsigned int x_res, unsigned int y_res);
     void add_object(object *object);
     template <class light_t>
     void add_light(light_t* light);
     // This does a ray tracing on all objects and print result in  out.ppm
     void render();
     // Used by tbb::parallel_for
-    void operator() (const tbb::blocked_range<unsigned>& r) const;
+    void operator() (const tbb::blocked_range<unsigned int>& r) const;
 
 private:
     glm::vec3 sample_pixel(glm::vec3& eye, glm::vec3& ray,
-                             unsigned depth) const;
+                             unsigned int depth) const;
     void dump_to_file() const;
     voxel intersect_ray(glm::vec3& pos, glm::vec3& dir) const;
 private:
@@ -51,8 +51,8 @@ private:
     // height of scene in world size
     float height_;
     // resolution of image along x and y axis (number of pixels)
-    unsigned x_res_;
-    unsigned y_res_;
+    unsigned int x_res_;
+    unsigned int y_res_;
     std::vector<glm::vec3> res_;
     static std::atomic<unsigned short> counter;
 };
