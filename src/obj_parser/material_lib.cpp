@@ -48,6 +48,8 @@ void material_lib::update_material(material_ptr mtl, std::string& token)
         mtl->get_ambient() = make_vec3(iss_, "ambient_mat");
     else if (!token.compare("Kd"))
         mtl->get_diffuse() = make_vec3(iss_, "diffuse_mat");
+    else if (!token.compare("Ke"))
+        mtl->get_emissive() = make_vec3(iss_, "emissive_mat");
     else if (!token.compare("Ks"))
         mtl->get_specular() = make_vec3(iss_, "specular_mat");
     else if (!token.compare("Ns"))

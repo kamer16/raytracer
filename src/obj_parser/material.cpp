@@ -47,6 +47,13 @@ material::get_specular()
 }
 
 glm::vec3&
+material::get_emissive()
+{
+    return emissive_;
+}
+
+
+glm::vec3&
 material::get_diffuse()
 {
     return diffuse_;

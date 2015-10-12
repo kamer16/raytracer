@@ -29,12 +29,15 @@ public:
     glm::vec3& get_ambient();
     glm::vec3& get_specular();
     glm::vec3& get_diffuse();
+    glm::vec3& get_emissive();
     void set_ambient(glm::vec3&& ambient) { ambient_ = ambient; }
     void set_diffuse(glm::vec3&& diffuse) { diffuse_ = diffuse; }
     void set_specular(glm::vec3&& specular) { specular_ = specular; }
+    void set_emissive(glm::vec3&& emissive) { emissive_ = emissive; }
     void set_ambient(glm::vec3& ambient) { ambient_ = ambient; }
     void set_diffuse(glm::vec3& diffuse) { diffuse_ = diffuse; }
     void set_specular(glm::vec3& specular) { specular_ = specular; }
+    void set_emissive(glm::vec3& emissive) { emissive_ = emissive; }
     float& get_shininess();
     float& get_dissolve();
     std::string& get_ambient_path();
@@ -62,6 +65,8 @@ private:
     glm::vec3 diffuse_;
     // Ks
     glm::vec3 specular_;
+    // Ke
+    glm::vec3 emissive_ = glm::vec3(0.f, 0.f, 0.f);
     // ambient texture map ==> map_Ka
     std::string ambient_path_;
     // diffuse texture map ==> map_Kd
