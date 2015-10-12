@@ -54,9 +54,9 @@ scene::operator() (const tbb::blocked_range<unsigned int>& r) const
         }
     }
 
-  scene::counter.fetch_add(static_cast<unsigned short>(r.end() - r.begin()));
-  short n0 = static_cast<short>(100.f * (scene::counter - 1) / y_res_);
-  short n1 = static_cast<short>(100.f * (scene::counter) / y_res_);
+  auto c = scene::counter.fetch_add(static_cast<unsigned short>(r.end() - r.begin()));
+  short n0 = static_cast<short>(100.f * (c - 1) / y_res_);
+  short n1 = static_cast<short>(100.f * c / y_res_);
   if (n0 != n1)
     (std::cout << n1 << ' ').flush();
 }
