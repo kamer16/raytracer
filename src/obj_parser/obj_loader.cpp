@@ -199,28 +199,10 @@ obj_loader::index_object(material& mat)
         size_t t_idx = indices_[i].t - 1;
         auto pair = map.insert(make_pair(make_tuple(v_idx, n_idx, t_idx),
                                          out_vertices.size()));
-        if (pair.second) {
-            if (std::is_same<container_t, utility::vertex_vnta>::value) {
-                container_t content(vertices_[v_idx], normals_[n_idx],
-                                    text_coords_[t_idx], glm::vec4(0, 0, 0, 0));
-                out_vertices.push_back(content);
-            }
-            else if (std::is_same<container_t, utility::vertex_vnt>::value) {
-                container_t content(vertices_[v_idx], normals_[n_idx],
-                                    text_coords_[t_idx]);
-                out_vertices.push_back(content);
-            }
-            else if (std::is_same<container_t, utility::vertex_vn>::value) {
-                container_t content(vertices_[v_idx], normals_[n_idx]);
-                out_vertices.push_back(content);
-            }
-            else if (std::is_same<container_t, utility::vertex_v>::value) {
-                container_t content(vertices_[v_idx]);
-                out_vertices.push_back(content);
-            }
-            else
-                std::cerr << "Obj Loader : Unkown material type\n";
-        }
+        container_t content(vertices_[v_idx], normals_[n_idx],
+                            text_coords_[t_idx], glm::vec4(0, 0, 0, 0));
+        out_vertices.push_back(content);
+
         out_idx.push_back(pair.first->second);
     }
 }
@@ -243,7 +225,7 @@ obj_loader::print_triangles(container3& vertices, container2& text_coords,
 }
 
 void
-obj_loader::compute_tangents(material_vnta& material)
+obj_loader::compute_tangents(material& material)
 {
     vertices_idx& indices = material.get_indices();
     container_vnta& vertices = material.get_vertices();
@@ -319,23 +301,13 @@ void obj_loader::set_material_indices(material* mat)
 {
     if (vertices_.size() == 0)
         std::cerr << "File does not define any vertices\n";
-    if (indices_[0].n == 0 && mat->want_normal)
+    if (indices_[0].n == 0)
         compute_normals(0);
+    // At the moment we only compute tangens when needed
+    index_object(*mat);
     if (!mat->get_bump_path().empty()) {
-        index_object(static_cast<material_vnta&>(*mat));
-        compute_tangents(static_cast<material_vnta&>(*mat));
+        compute_tangents(*mat);
     }
-    // Vertices and Normals and Textures
-    else if (!mat->get_ambient_path().empty() ||
-             !mat->get_diffuse_path().empty() ||
-             !mat->get_specular_path().empty() ||
-             !mat->get_dissolve_path().empty())
-        index_object(static_cast<material_vnt&>(*mat));
-    else if (draw_lines_)
-        index_object(static_cast<material_v&>(*mat));
-    // Vertices and Normals
-    else
-        index_object(static_cast<material_vn&>(*mat));
 }
 
 bool sort_materials(material* left, material* right);
@@ -376,7 +348,7 @@ obj_loader::load_obj(std::string& file) -> object*
         else if (!token.compare("f"))
             add_indices();
         else if (!token.compare("mtllib")) {
-            mat_lib.load_material_lib(iss_, draw_lines_);
+            mat_lib.load_material_lib(iss_);
         }
         else if (!token.compare("usemtl")) {
             // Update indices in current_material, and add new vertex_elements
@@ -403,7 +375,7 @@ obj_loader::load_obj(std::string& file) -> object*
     // Update last object that was added to materials object list
     if (!current_mat) {
         // Use default material since there were none
-        current_mat = new material_vn;
+        current_mat = new material;
         current_mat->set_render_type(render_type::material);
         // Check if mat already exists or not in resulting vector
         current_mat->get_ambient() = glm::vec3(0.2, 0.2, 0.2);

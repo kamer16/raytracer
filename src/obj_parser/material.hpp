@@ -16,9 +16,8 @@ class resource_manager;
 class material
 {
 public:
-    using container_vnt = std::vector<utility::vertex_vnt>;
+    using value_type = utility::vertex_vnta;
     using container_vnta = std::vector<utility::vertex_vnta>;
-    using container_vn = std::vector<utility::vertex_vn>;
     using index_map = std::unordered_map<std::tuple<size_t, size_t, size_t>,
           unsigned, hash_ptr>;
     using vertices_idx = std::vector<unsigned>;
@@ -50,9 +49,10 @@ public:
     vertices_idx& get_indices();
     index_map& get_idx_lut();
 
-    virtual boundary get_boundary();
-    virtual voxel intersect_ray(glm::vec3& L, glm::vec3& ray);
-    virtual ~material() = default;
+    boundary get_boundary();
+    voxel intersect_ray(glm::vec3& L, glm::vec3& ray);
+    container_vnta& get_vertices();
+    ~material() = default;
 private:
     // TODO anmbient_ is a cheat and only needed when inderected lighting is not
     // computed, otherwise object only has diffuse color and shininess factor
@@ -90,100 +90,11 @@ protected:
     // triangle and the data is found in the vertex buffer whichi usually is on
     // the GPU in OpenGL
     vertices_idx indices;
-
-public:
-    // Hack to know when we use material_v
-    // want_normal = true => normals will be computed from vertices
-    bool want_normal = true;
-};
-
-class material_vnt : public material
-{
-public:
-    material_vnt(material& parent)
-        : material(parent)
-    {}
-    using container_vnt = std::vector<utility::vertex_vnt>;
-    using value_type = utility::vertex_vnt;
-    container_vnt& get_vertices();
-    static const bool has_normal = 1;
-    static const bool has_texture = 1;
-    static const bool has_adjacent = 0;
-
-    virtual voxel intersect_ray(glm::vec3& L, glm::vec3& ray) override;
-    virtual boundary get_boundary() override;
-    virtual ~material_vnt() = default;
-private:
-    container_vnt vertices_vnt;
-};
-
-class material_v : public material
-{
-public:
-    // want_normal = true => normals will be computed from vertices
-    material_v()
-    { want_normal = true; }
-    material_v(material_v&)
-    { want_normal = true; }
-    material_v(material& parent)
-        : material(parent)
-    { want_normal = true; }
-    using container_v = std::vector<utility::vertex_v>;
-    using value_type = utility::vertex_v;
-    container_v& get_vertices();
-    static const bool has_normal = 0;
-    static const bool has_texture = 0;
-    static const bool has_adjacent = 0;
-
-    virtual boundary get_boundary() override;
-    virtual voxel intersect_ray(glm::vec3& L, glm::vec3& ray) override;
-    virtual ~material_v() = default;
-private:
-    container_v vertices_v;
-};
-
-class material_vn : public material
-{
-public:
-    material_vn() = default;
-    material_vn(material& parent)
-        : material(parent)
-    {}
-    using container_vn = std::vector<utility::vertex_vn>;
-    using value_type = utility::vertex_vn;
-    container_vn& get_vertices();
-    static const bool has_normal = 1;
-    static const bool has_texture = 0;
-    static const bool has_adjacent = 0;
-
-    virtual boundary get_boundary() override;
-    virtual voxel intersect_ray(glm::vec3& L, glm::vec3& ray) override;
-    virtual ~material_vn() = default;
-private:
-    container_vn vertices_vn;
-};
-
-class material_vnta : public material
-{
-public:
-    material_vnta(material& parent)
-        : material(parent)
-    {}
-    using container_vnta = std::vector<utility::vertex_vnta>;
-    using value_type = utility::vertex_vnta;
-    material_vnta() = default;
-    container_vnta& get_vertices();
-    static const bool has_normal = 1;
-    static const bool has_texture = 1;
-    static const bool has_adjacent = 1;
-
-    virtual boundary get_boundary() override;
-    virtual voxel intersect_ray(glm::vec3& L, glm::vec3& ray) override;
-    virtual ~material_vnta() = default;
-private:
     container_vnta vertices_vnta;
+
 };
 
-#include "obj_parser/material_lib.hxx"
+voxel intersect_ray(material& mat, glm::vec3& eye_pos, glm::vec3& eye_dir);
+boundary get_boundary(material& mat);
 
 #endif // MATERIAL_HPP

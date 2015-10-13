@@ -12,34 +12,34 @@ make_coordinate()
     object *coord = new object();
 
     {
-    material_v* mat = new material_v();
+    material* mat = new material();
     auto& vertices = mat->get_vertices();
     auto& indices = mat->get_indices();
     indices.push_back(0); indices.push_back(1);
-    vertices.push_back(vertex_v(vec3(0.0f, 0.0f, 0.0f   )));
-    vertices.push_back(vertex_v(vec3(800.0f, 0.0f, 0.0f )));
+    vertices.push_back(vertex_vnta(vec3(0.0f, 0.0f, 0.0f   )));
+    vertices.push_back(vertex_vnta(vec3(800.0f, 0.0f, 0.0f )));
     mat->set_ambient(glm::vec3(1, 0, 0));
     coord->add_material(mat);
     }
 
     {
-    material_v* mat = new material_v();
+    material* mat = new material();
     auto& vertices = mat->get_vertices();
     auto& indices = mat->get_indices();
     indices.push_back(0); indices.push_back(1);
-    vertices.push_back(vertex_v(vec3(0.0f, 0.0f, 0.0f   )));
-    vertices.push_back(vertex_v(vec3(0.0f, 800.0f, 0.0f )));
+    vertices.push_back(vertex_vnta(vec3(0.0f, 0.0f, 0.0f   )));
+    vertices.push_back(vertex_vnta(vec3(0.0f, 800.0f, 0.0f )));
     mat->set_ambient(glm::vec3(0, 1, 0));
     coord->add_material(mat);
     }
 
     {
-    material_v*mat = new material_v();
+    material*mat = new material();
     auto&vertices = mat->get_vertices();
     auto& indices = mat->get_indices();
     indices.push_back(0); indices.push_back(1);
-    vertices.push_back(vertex_v(vec3(0.0f, 0.0f, 0.0f   )));
-    vertices.push_back(vertex_v(vec3(0.0f, 0.0f, 800.0f )));
+    vertices.push_back(vertex_vnta(vec3(0.0f, 0.0f, 0.0f   )));
+    vertices.push_back(vertex_vnta(vec3(0.0f, 0.0f, 800.0f )));
     mat->set_ambient(glm::vec3(0, 0, 1));
     coord->add_material(mat);
     }
@@ -50,7 +50,7 @@ make_coordinate()
 object*
 make_quad_xy()
 {
-    material_vn* mat = new material_vn();
+    material* mat = new material();
     auto& vertices = mat->get_vertices();
     auto& indices = mat->get_indices();
 
@@ -61,10 +61,10 @@ make_quad_xy()
     //auto& vertices = quad_xy->get_vertices();
     using namespace glm;
     using namespace utility;
-    vertices.push_back(vertex_vn(vec3(-1.0f, -1.0f, 0.0f), vec3(0.5f, 0.0f, 0.0f)));
-    vertices.push_back(vertex_vn(vec3( 1.0f, -1.0f, 0.0f), vec3(0.0f, 0.0f, 0.5f)));
-    vertices.push_back(vertex_vn(vec3( 1.0f,  1.0f, 0.0f), vec3(0.0f, 0.5f, 0.0f)));
-    vertices.push_back(vertex_vn(vec3(-1.0f,  1.0f, 0.0f), vec3(0.5f, 0.5f, 0.5f)));
+    vertices.push_back(vertex_vnta(vec3(-1.0f, -1.0f, 0.0f), vec3(0.5f, 0.0f, 0.0f)));
+    vertices.push_back(vertex_vnta(vec3( 1.0f, -1.0f, 0.0f), vec3(0.0f, 0.0f, 0.5f)));
+    vertices.push_back(vertex_vnta(vec3( 1.0f,  1.0f, 0.0f), vec3(0.0f, 0.5f, 0.0f)));
+    vertices.push_back(vertex_vnta(vec3(-1.0f,  1.0f, 0.0f), vec3(0.5f, 0.5f, 0.5f)));
     mat->set_ambient(glm::vec3(0.3, 0.3, 0.1));
     quad_xy->add_material(mat);
     return quad_xy;
@@ -73,7 +73,7 @@ make_quad_xy()
 object*
 make_quad_xz()
 {
-    material_vn* mat = new material_vn();
+    material* mat = new material();
     auto& vertices = mat->get_vertices();
     auto& indices = mat->get_indices();
 
@@ -84,10 +84,10 @@ make_quad_xz()
     //auto& vertices = quad_xz->get_vertices();
     using namespace glm;
     using namespace utility;
-    vertices.push_back(vertex_vn(vec3(-9.5f, 0.0f, -9.5f), vec3(0.5f, 0.0f, 0.0f)));
-    vertices.push_back(vertex_vn(vec3( 9.5f, 0.0f, -9.5f), vec3(0.0f, 0.0f, 0.5f)));
-    vertices.push_back(vertex_vn(vec3( 9.5f, 0.0f,  9.5f), vec3(0.0f, 0.5f, 0.0f)));
-    vertices.push_back(vertex_vn(vec3(-9.5f, 0.0f,  9.5f), vec3(0.5f, 0.5f, 0.5f)));
+    vertices.push_back(vertex_vnta(vec3(-9.5f, 0.0f, -9.5f), vec3(0.5f, 0.0f, 0.0f)));
+    vertices.push_back(vertex_vnta(vec3( 9.5f, 0.0f, -9.5f), vec3(0.0f, 0.0f, 0.5f)));
+    vertices.push_back(vertex_vnta(vec3( 9.5f, 0.0f,  9.5f), vec3(0.0f, 0.5f, 0.0f)));
+    vertices.push_back(vertex_vnta(vec3(-9.5f, 0.0f,  9.5f), vec3(0.5f, 0.5f, 0.5f)));
     mat->set_ambient(glm::vec3(0.1, 0.3, 0.3));
 
     quad_xz->add_material(mat);
@@ -98,7 +98,7 @@ object*
 make_cube()
 {
     object *cube = new object();
-    material_vn* mat = new material_vn();
+    material* mat = new material();
     auto& vertices = mat->get_vertices();
     auto& indices = mat->get_indices();
     indices.push_back(0); indices.push_back(2); indices.push_back(1);
@@ -134,7 +134,7 @@ object*
 make_sphere(unsigned stacks, unsigned slices, float radius)
 {
     object *sphere = new object();
-    material_vn* mat = new material_vn();
+    material* mat = new material();
     auto& vertices = mat->get_vertices();
     auto& indices = mat->get_indices();
     // Calc The Vertices

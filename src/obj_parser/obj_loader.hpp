@@ -30,8 +30,6 @@ public:
     using index_map = std::unordered_map<std::tuple<size_t, size_t, size_t>,
                                          unsigned, hash_ptr>;
     using container_vnta = std::vector<utility::vertex_vnta>;
-    using container_vnt = std::vector<utility::vertex_vnt>;
-    using container_vn = std::vector<utility::vertex_vn>;
     using vertices_idx = std::vector<unsigned>;
     using materials = std::vector<material*>;
     using container3 = std::vector<glm::vec3>;
@@ -40,10 +38,6 @@ public:
     // Reads an Obj files and stores vertices, normals, and texture coords.
     // A simple call to glDrawArarys will render the object.
     object* load_obj(std::string& file);
-    // If draw_line is true then normals are not computed
-    obj_loader(bool draw_line = false)
-        : draw_lines_(draw_line)
-    { }
 
     // Print out vector in the mesh format
     // Mesh will only contain triangles
@@ -62,7 +56,7 @@ private:
                                 size_t idx1, size_t idx2, size_t idx3,
                                 glm::vec3& cross,
                                 unsigned i);
-    void compute_tangents(material_vnta& mat);
+    void compute_tangents(material& mat);
     void compute_normals(char flat_shading);
     void set_material_indices(material* mat);
 
@@ -72,7 +66,6 @@ private:
     container_idx indices_;
     std::istringstream iss_;
     std::ifstream ifs_;
-    bool draw_lines_;
 };
 
 #endif // OBJ_LOADER_HPP

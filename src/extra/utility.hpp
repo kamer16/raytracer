@@ -61,64 +61,34 @@ namespace utility
         glm::vec3 color;
     };
 
-    struct vertex_vnt
-    {
-        glm::vec3 v;
-        glm::vec3 n;
-        glm::vec2 t;
-        vertex_vnt(glm::vec3& v_, glm::vec3& n_);
-        vertex_vnt(glm::vec3& v_, glm::vec3& n_, glm::vec2& t_, glm::vec4&& a_);
-        vertex_vnt(glm::vec3& v_, glm::vec3& n_, glm::vec2& t_)
-            : v(v_), n(n_), t(t_)
-        { }
-        vertex_vnt(glm::vec3& v_);
-        vertex_vnt(glm::vec3&& v_);
-    };
-
     struct vertex_vnta
     {
         glm::vec3 v;
         glm::vec3 n;
         glm::vec2 t;
         glm::vec4 a;
-        vertex_vnta(glm::vec3& v_, glm::vec3& n_);
-        vertex_vnta(glm::vec3& v_, glm::vec3& n_, glm::vec2& t_);
+        vertex_vnta(glm::vec3&& v_, glm::vec3&& n_)
+            : v(v_), n(n_), t(glm::vec3(0.f, 0.f, 0.f)),
+            a(glm::vec4(0.f, 0.f, 0.f, 0.f))
+        { }
+        vertex_vnta(glm::vec3& v_, glm::vec3& n_)
+            : v(v_), n(n_), t(glm::vec3(0.f, 0.f, 0.f)),
+            a(glm::vec4(0.f, 0.f, 0.f, 0.f))
+        { }
+        vertex_vnta(glm::vec3& v_, glm::vec3& n_, glm::vec2& t_)
+            : v(v_), n(n_), t(t_), a(glm::vec4(0.f, 0.f, 0.f, 0.f))
+        { }
         vertex_vnta(glm::vec3& v_, glm::vec3& n_, glm::vec2& t_, glm::vec4&& a_)
             : v(v_), n(n_), t(t_), a(a_)
         { }
-        vertex_vnta(glm::vec3& v_);
-        vertex_vnta(glm::vec3&& v_);
-    };
-
-    struct vertex_v
-    {
-        glm::vec3 v;
-        vertex_v(glm::vec3& v_, glm::vec3& n_, glm::vec2& t_, glm::vec4&& a_);
-        vertex_v(glm::vec3& v_, glm::vec3& n_, glm::vec2& t_);
-        vertex_v(glm::vec3&& v_, glm::vec3&& n_);
-        vertex_v(glm::vec3& v_, glm::vec3& n_);
-        vertex_v(glm::vec3& v_)
-            : v(v_)
+        vertex_vnta(glm::vec3& v_)
+            : v(v_), n(glm::vec3(0.f, 0.f, 0.f)), t(glm::vec3(0.f, 0.f, 0.f)),
+            a(glm::vec4(0.f, 0.f, 0.f, 0.f))
         { }
-        vertex_v(glm::vec3&& v_)
-            : v(v_)
+        vertex_vnta(glm::vec3&& v_)
+            : v(v_), n(glm::vec3(0.f, 0.f, 0.f)), t(glm::vec3(0.f, 0.f, 0.f)),
+            a(glm::vec4(0.f, 0.f, 0.f, 0.f))
         { }
-    };
-
-    struct vertex_vn
-    {
-        glm::vec3 v;
-        glm::vec3 n;
-        vertex_vn(glm::vec3& v_, glm::vec3& n_, glm::vec2& t_, glm::vec4&& a_);
-        vertex_vn(glm::vec3& v_, glm::vec3& n_, glm::vec2& t_);
-        vertex_vn(glm::vec3& v_, glm::vec3& n_)
-            : v(v_), n(n_)
-        { }
-        vertex_vn(glm::vec3&& v_, glm::vec3&& n_)
-            : v(v_), n(n_)
-        { }
-        vertex_vn(glm::vec3& v_);
-        vertex_vn(glm::vec3&& v_);
     };
 
     void print(glm::mat4 mat);
