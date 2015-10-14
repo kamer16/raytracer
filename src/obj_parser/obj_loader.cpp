@@ -199,8 +199,11 @@ obj_loader::index_object(material& mat)
         size_t t_idx = indices_[i].t - 1;
         auto pair = map.insert(make_pair(make_tuple(v_idx, n_idx, t_idx),
                                          out_vertices.size()));
+        glm::vec2 text_coord(0.f, 0.f);
+        if (indices_[i].t)
+          text_coord = text_coords_[t_idx];
         container_t content(vertices_[v_idx], normals_[n_idx],
-                            text_coords_[t_idx], glm::vec4(0, 0, 0, 0));
+                            text_coord, glm::vec4(0, 0, 0, 0));
         out_vertices.push_back(content);
 
         out_idx.push_back(pair.first->second);

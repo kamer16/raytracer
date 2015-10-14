@@ -40,6 +40,7 @@ scene::operator() (const tbb::blocked_range<unsigned int>& r) const
   glm::vec3 L = look_at - u * w / 2.0f - v * h / 2.0f;
 
   glm::vec3* res = const_cast<glm::vec3*>(res_.data());
+  unsigned short nb[3] = { 0, 0, counter };
   for (unsigned int y = r.begin(); y != r.end(); ++y)
     {
       for (unsigned int x = 0; x < x_res_; ++x)
@@ -52,11 +53,13 @@ scene::operator() (const tbb::blocked_range<unsigned int>& r) const
           unsigned int idx = x + static_cast<unsigned int>(y) * x_res_;
           auto dir = glm::normalize(eye_look - eye);
           res[idx] = glm::vec3(0.f, 0.f, 0.f);
-          int nb_samples = 1;
+          int nb_samples = 32;
+          if (basic_ray_tracing)
+            nb_samples = 1;
           float div = static_cast<float>(nb_samples);
           unsigned depth = 5;
           for (int i = 0; i < nb_samples; ++i)
-            res[idx] = res[idx] + sample_pixel(eye, dir, depth) / div;
+            res[idx] = res[idx] + sample_pixel(eye, dir, depth, nb) / div;
 
           res[idx].x = std::min(1.f, res[idx].x);
           res[idx].y = std::min(1.f, res[idx].y);
@@ -74,7 +77,8 @@ scene::operator() (const tbb::blocked_range<unsigned int>& r) const
 
 // dir points towards objects
 glm::vec3
-scene::sample_pixel(glm::vec3& pos, glm::vec3& dir, unsigned int depth) const
+scene::sample_pixel(glm::vec3& pos, glm::vec3& dir, unsigned int depth,
+                    unsigned short* nb) const
 {
   glm::vec3 color(0.f, 0.f, 0.f);
   voxel v = intersect_ray(pos, dir);
@@ -85,39 +89,52 @@ scene::sample_pixel(glm::vec3& pos, glm::vec3& dir, unsigned int depth) const
   // reflective vector wrt dir
   glm::vec3 reflect = glm::normalize(dir - 2.f * glm::dot(v.norm, dir) *
                                      v.norm);
+  color += v.mat->get_emissive();
   if (depth)
     {
       // Check if object is specular
-      if (glm::length(v.mat->get_specular()) > 0.0001f)
+      if (basic_ray_tracing && glm::length(v.mat->get_specular()) > 0.0001f)
         {
           // Offset pos slightly to avoid numerical errors otherwise we might
           // intersect with ourself
           // Compute reflected color
           auto p = v.pos + 0.01f * reflect;
-          color += v.mat->get_specular() * sample_pixel(p, reflect, depth - 1);
+          color += v.mat->get_specular() * sample_pixel(p, reflect, depth - 1, nb);
+        }
+      else if (!basic_ray_tracing)
+        {
+          auto p = v.pos + 0.01f * reflect;
+          glm::vec3 rand_dir = create_rand_dir(reflect, nb);
+          color += v.mat->get_diffuse() * sample_pixel(p, rand_dir, depth - 1, nb);
         }
     }
-  compute_light(v, color, reflect);
+  // Uncomment this to get basic ray tracing
+  if (basic_ray_tracing)
+    compute_light(v, color, reflect);
 
-  color += v.mat->get_emissive();
 
   return color;
 }
 
-glm::vec3 scene::create_rand_dir(glm::vec3& norm) const
+// Cosine weighted distirbution along norm direction
+glm::vec3 scene::create_rand_dir(glm::vec3& norm, unsigned short* nb) const
 {
-  static unsigned short nb[3] = {0, 0, 0};
   // Diffuse sampling
-  float phi = 3.14f * static_cast<float>(erand48(nb)) - 1.57f;
-  float theta = 2.f * 3.14f * static_cast<float>(erand48(nb));
+  float cos_theta_square = static_cast<float>(erand48(nb));
+  float cos_theta = sqrtf(cos_theta_square);
+  float sin_theta = sqrtf(1.f - cos_theta_square);
+
+  float phi = 2.f * static_cast<float>(M_PI * erand48(nb));
+  float sin_phi = glm::sin(phi);
+  float cos_phi = glm::cos(phi);
+
   glm::vec3 z = glm::normalize(norm);
   glm::vec3 y = glm::normalize(glm::vec3(z.z - z.y, z.x, -z.x));
   glm::vec3 x = glm::normalize(glm::cross(y, z));
 
-  // (theta, phi) C [0, 2*pi] x [-pi/2,pi/2]
-  glm::vec3 rand_dir = glm::sin(phi) * glm::cos(theta) * x +
-  glm::sin(phi) * glm::sin(theta) * y +
-  glm::cos(phi) * z;
+  glm::vec3 rand_dir = sin_theta * cos_phi * x +
+                       sin_theta * sin_phi * y +
+                       cos_theta * z;
   rand_dir = glm::normalize(rand_dir);
   return rand_dir;
 }

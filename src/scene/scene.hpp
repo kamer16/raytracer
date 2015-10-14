@@ -34,12 +34,12 @@ public:
 
 private:
     glm::vec3 sample_pixel(glm::vec3& eye, glm::vec3& ray,
-                             unsigned int depth) const;
+                             unsigned int depth, unsigned short* nm) const;
     void compute_light(voxel& v, glm::vec3& color, glm::vec3& reflect) const;
     void dump_to_file() const;
     // Can be used to create new random normal for the monte carlo method
     // TODO Check if the new normal is in hemisphere
-    glm::vec3 create_rand_dir(glm::vec3& norm) const;
+    glm::vec3 create_rand_dir(glm::vec3& norm, unsigned short* nb) const;
     voxel intersect_ray(glm::vec3& pos, glm::vec3& dir) const;
 private:
     camera camera_;
@@ -59,6 +59,7 @@ private:
     unsigned int y_res_;
     std::vector<glm::vec3> res_;
     static std::atomic<unsigned short> counter;
+    bool basic_ray_tracing = true;
 };
 
 # include "scene/scene.hxx"
