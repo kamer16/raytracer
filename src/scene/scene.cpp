@@ -57,7 +57,7 @@ scene::operator() (const tbb::blocked_range<unsigned int>& r) const
           if (basic_ray_tracing)
             nb_samples = 1;
           float div = static_cast<float>(nb_samples);
-          unsigned depth = 5;
+          unsigned depth = 4;
           for (int i = 0; i < nb_samples; ++i)
             res[idx] = res[idx] + sample_pixel(eye, dir, depth, nb) / div;
 
@@ -90,25 +90,28 @@ scene::sample_pixel(glm::vec3& pos, glm::vec3& dir, unsigned int depth,
   glm::vec3 reflect = glm::normalize(dir - 2.f * glm::dot(v.norm, dir) *
                                      v.norm);
   color += v.mat->get_emissive();
+  color += v.mat->get_diffuse() * 0.15f;
   if (depth)
     {
+      float prob = static_cast<float>(erand48(nb));
       // Check if object is specular
-      if (basic_ray_tracing && glm::length(v.mat->get_specular()) > 0.0001f)
+      if ((basic_ray_tracing || prob < 0.5) &&
+           glm::length(v.mat->get_specular()) > 0.0001f)
         {
           // Offset pos slightly to avoid numerical errors otherwise we might
           // intersect with ourself
           // Compute reflected color
-          auto p = v.pos + 0.01f * reflect;
+          auto p = v.pos + 0.0001f * reflect;
           color += v.mat->get_specular() * sample_pixel(p, reflect, depth - 1, nb);
         }
       else if (!basic_ray_tracing)
         {
-          auto p = v.pos + 0.01f * reflect;
-          glm::vec3 rand_dir = create_rand_dir(reflect, nb);
+          auto p = v.pos + 0.0001f * reflect;
+          glm::vec3 rand_dir = create_rand_dir(v.norm, nb);
           color += v.mat->get_diffuse() * sample_pixel(p, rand_dir, depth - 1, nb);
         }
     }
-  // Uncomment this to get basic ray tracing
+
   if (basic_ray_tracing)
     compute_light(v, color, reflect);
 
@@ -152,7 +155,7 @@ scene::compute_light(voxel& v, glm::vec3& color, glm::vec3& reflect) const
       auto p = v.pos + 10.f * l->get_position();
       auto d = -light_dir;
       voxel c = intersect_ray(p, d);
-      if (glm::distance(c.pos,v.pos) > 0.01f)
+      if (glm::distance(c.pos, v.pos) > 0.001f)
         continue;
 
       float dot_diffuse = glm::dot(v.norm, light_dir);
@@ -173,7 +176,7 @@ scene::compute_light(voxel& v, glm::vec3& color, glm::vec3& reflect) const
 
       auto p = l->get_position(); auto d = -light_dir;
       voxel c = intersect_ray(p, d);
-      if (c.dist + 0.01f < glm::distance(l->get_position(), v.pos))
+      if (c.dist + 0.001f < glm::distance(l->get_position(), v.pos))
         continue;
 
       float dot_diffuse = glm::dot(v.norm, light_dir);
