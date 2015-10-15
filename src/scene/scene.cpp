@@ -57,9 +57,13 @@ scene::operator() (const tbb::blocked_range<unsigned int>& r) const
           if (basic_ray_tracing)
             nb_samples = 1;
           float div = static_cast<float>(nb_samples);
+          if (!basic_ray_tracing)
+            div /= 2;
           unsigned depth = 4;
+          // We assume that camera starts in air
+          float Ni = 1.f;
           for (int i = 0; i < nb_samples; ++i)
-            res[idx] = res[idx] + sample_pixel(eye, dir, depth, nb) / div;
+            res[idx] = res[idx] + sample_pixel(eye, dir, depth, nb, Ni) / div;
 
           res[idx].x = std::min(1.f, res[idx].x);
           res[idx].y = std::min(1.f, res[idx].y);
@@ -78,46 +82,108 @@ scene::operator() (const tbb::blocked_range<unsigned int>& r) const
 // dir points towards objects
 glm::vec3
 scene::sample_pixel(glm::vec3& pos, glm::vec3& dir, unsigned int depth,
-                    unsigned short* nb) const
+                    unsigned short* nb, float Ni) const
 {
-  glm::vec3 color(0.f, 0.f, 0.f);
+  glm::vec3 out_color(0.f, 0.f, 0.f);
   voxel v = intersect_ray(pos, dir);
   // If nothing was intersected return black
   if (!v.mat)
-    return (color);
+    return (out_color);
 
   // reflective vector wrt dir
   glm::vec3 reflect = glm::normalize(dir - 2.f * glm::dot(v.norm, dir) *
                                      v.norm);
-  color += v.mat->get_emissive();
-  color += v.mat->get_diffuse() * 0.15f;
+  out_color += v.mat->get_emissive();
   if (depth)
     {
-      float prob = static_cast<float>(erand48(nb));
-      // Check if object is specular
-      if ((basic_ray_tracing || prob < 0.5) &&
-           glm::length(v.mat->get_specular()) > 0.0001f)
+      // Offset pos slightly to avoid numerical errors otherwise we might
+      // intersect with ourself
+      auto p = v.pos + 0.001f * v.norm;
+      // Default value for reflective illumination 5
+      glm::vec3 new_dir = reflect;
+      glm::vec3 color = v.mat->get_specular();
+      // Used to know where to offset ray to not reintersect with itself
+      glm::vec3 norm = v.norm;
+      if (basic_ray_tracing)
+        { /* Just reflect */ }
+      else if (v.mat->get_illum() == 2)
         {
-          // Offset pos slightly to avoid numerical errors otherwise we might
-          // intersect with ourself
-          // Compute reflected color
-          auto p = v.pos + 0.001f * v.norm;
-          color += v.mat->get_specular() * sample_pixel(p, reflect, depth - 1, nb);
+           if (glm::length(v.mat->get_specular()) < 0.01f || erand48(nb) > 0.5)
+             {
+               new_dir = create_rand_dir(v.norm, nb);
+               color = v.mat->get_diffuse();
+             }
         }
-      else if (!basic_ray_tracing)
+      else if (v.mat->get_illum() == 7)
         {
-          auto p = v.pos+ 0.001f * v.norm;
-          glm::vec3 rand_dir = create_rand_dir(v.norm, nb);
-          color += v.mat->get_diffuse() * sample_pixel(p, rand_dir, depth - 1, nb);
+          float ni, nt;
+          if (glm::dot(v.norm, -dir) < 0)
+            {
+              ni = 1; nt = 1.5; norm = -norm;
+              // Check if you are entering or not
+            }
+          else
+            {
+              nt = 1.5;
+              ni = 1;
+            }
+          float Re = reflectance(norm, dir, ni, nt);
+          float Tr = 1.f - Re;
+          assert(Re <= 1.f);
+          if (Tr > 0.001)
+            {
+              glm::vec3 refr = refract(norm, dir, ni, nt);
+
+              auto p_r = v.pos - 0.001f * norm;
+              assert(glm::dot(refr, -norm) >= 0);
+              // Transparent objects should use transmittance filter
+              out_color += Tr * sample_pixel(p_r, refr, depth - 1, nb,
+                                                     v.mat->get_Ni());
+            }
+          // Perfect specular color should we filter light by specular component
+          // of object ?
+          color *= glm::vec3(Re);
         }
+
+      auto p_r = v.pos + 0.001f * norm;
+      assert(glm::dot(new_dir, norm) >= -0.1);
+      out_color += color * sample_pixel(p_r, new_dir, depth - 1, nb, Ni);
     }
 
-  assert(glm::dot(reflect, v.norm) >= 0.);
+  assert(glm::dot(reflect, v.norm) >= 0. && glm::dot(v.norm, dir) <= 0);
   if (basic_ray_tracing)
-    compute_light(v, color, reflect);
+    compute_light(v, out_color, reflect);
 
 
-  return color;
+  return out_color;
+}
+
+
+float
+scene::reflectance(const glm::vec3& normal, const glm::vec3& incident,
+                   float n1, float n2) const
+{
+  const float n = n1 / n2;
+  const float cosI = -glm::dot(normal, incident);
+  const float sinT2 = n * n * (1.f - cosI * cosI);
+  if (sinT2 > 1.0)
+    return 1.0; // TR
+  const float cosT = sqrtf(1.f - sinT2);
+  const float rOrth = (n1 * cosI - n2 * cosT) / (n1 * cosI + n2 * cosT);
+  const float rPar = (n2 * cosI - n1 * cosT) / (n2 * cosI + n1 * cosT);
+  return (rOrth * rOrth + rPar * rPar) / 2.f;
+}
+
+glm::vec3
+scene::refract(const glm::vec3& normal, const glm::vec3& incident,
+               float n1, float n2) const
+{
+  const float n = n1 / n2;
+  const float cosI = -glm::dot(normal, incident);
+  const float sinT2 = n * n * (1.f - cosI * cosI);
+  assert(sinT2 <= 1.0 && "This is a Total internal refraction");
+  const float cosT = sqrtf(1.f - sinT2);
+  return n * incident + (n * cosI - cosT) * normal;
 }
 
 // Cosine weighted distirbution along norm direction

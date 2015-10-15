@@ -100,6 +100,7 @@ namespace utility
     glm::vec3 make_vec3(std::istringstream& iss, const char* func_name);
     glm::vec2 make_vec2(std::istringstream& iss, const char* func_name);
     float make_float(std::istringstream& iss, const char* func_name);
+    unsigned int make_uint(std::istringstream& iss, const char* func_name);
 
 }
 

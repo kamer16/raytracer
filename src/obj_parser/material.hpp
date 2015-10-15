@@ -39,6 +39,8 @@ public:
     void set_emissive(glm::vec3& emissive) { emissive_ = emissive; }
     float& get_shininess();
     float& get_dissolve();
+    float& get_Ni();
+    unsigned int& get_illum();
     std::string& get_ambient_path();
     std::string& get_diffuse_path();
     std::string& get_specular_path();
@@ -78,6 +80,12 @@ private:
     // Bump texture map ==> map_bump
     std::string bump_path_;
     float dissolve = 1.0f;
+    // Thre illumination models handles 2 is diffuse+spec, 5 only reflective, 7
+    // transparent with reflectionc and refraction
+    unsigned illum = 2;
+    // Refractive index, used when passing through transparent object
+    // By debault we use a value of 1 == Ni of air.
+    float Ni = 1;
 
     // Associative map_ of all indices of object to check.  If index already
     // exists it's id can be return, otherwise a new one is created

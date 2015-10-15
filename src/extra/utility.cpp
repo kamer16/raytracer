@@ -21,6 +21,15 @@ glm::vec2 make_vec2(std::istringstream& iss, const char* func_name)
     return glm::vec2(x, y);
 }
 
+unsigned int make_uint(std::istringstream& iss, const char* func_name)
+{
+    unsigned int x;
+    iss >> x;
+    if (iss.fail())
+        std::cerr << "Unable to make uint for :" << func_name << std::endl;
+    return x;
+}
+
 float make_float(std::istringstream& iss, const char* func_name)
 {
     float x;

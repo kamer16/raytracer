@@ -4,3 +4,23 @@ http://www.cs.princeton.edu/courses/archive/fall06/cos526/tmp/wynn.pdf
 # Bidirectional ray tracing
 https://graphics.stanford.edu/courses/cs348b-03/papers/veach-chapter10.pdf
 http://www.cs.jhu.edu/~misha/ReadingSeminar/Papers/Veach94.pdf
+
+Here is a list of different lighting models:
+
+Illumination    Properties that are turned on in the
+ model           Property Editor
+
+ 0              Color on and Ambient off
+ 1              Color on and Ambient on
+ 2              Highlight on
+ 3              Reflection on and Ray trace on
+ 4              Transparency: Glass on Reflection: Ray trace on
+ 5              Reflection: Fresnel on and Ray trace on
+ 6              Transparency: Refraction on Reflection: Fresnel off and Ray trace on
+ 7              Transparency: Refraction on Reflection: Fresnel on and Ray trace on
+ 8              Reflection on and Ray trace off
+ 9              Transparency: Glass on Reflection: Ray trace off
+ 10             Casts shadows onto invisible surfaces
+
+more info can be found at:
+http://paulbourke.net/dataformats/mtl/

@@ -56,6 +56,10 @@ void material_lib::update_material(material_ptr mtl, std::string& token)
         mtl->get_shininess() = make_float(iss_, "shininess");
     else if (!token.compare("d"))
         mtl->get_dissolve() = make_float(iss_, "dissolve");
+    else if (!token.compare("illum"))
+        mtl->get_illum() = make_uint(iss_, "illumination model");
+    else if (!token.compare("Ni"))
+        mtl->get_Ni() = make_float(iss_, "Refractive index");
 }
 
 void
@@ -197,7 +201,8 @@ intersect_ray(material& mat, glm::vec3& eye_pos, glm::vec3& eye_dir)
       glm::vec3 n = glm::normalize(glm::cross(u, v));
       float dot_val = -glm::dot(n, glm::normalize(eye_dir));
       // Ignore when ray is parallel to triangle or wrong side
-      if (fabs(dot_val) <= std::numeric_limits<float>::epsilon())
+      // However return objects facing backwards
+      if (fabsf(dot_val) <= std::numeric_limits<float>::epsilon())
         continue;
       // Find intersection on plane
       float r = -glm::dot(n, eye_pos - v0) / glm::dot(n, eye_dir);
@@ -221,7 +226,10 @@ intersect_ray(material& mat, glm::vec3& eye_pos, glm::vec3& eye_dir)
                                                          (1 - (t + s)) * n0);
           float new_dist = glm::distance(p, eye_pos);
           // Object has to be closer but not too close
-          if (new_dist < res.dist && new_dist > 0.01f)
+          // We also want to make sure that when hitting curved objects we do
+          // actually hit its and not its triangle normal
+          if (new_dist < res.dist && new_dist > 0.01f &&
+              glm::dot(interpolated_normal, eye_dir) <= 0)
             {
               res.dist = new_dist;
               res.norm = interpolated_normal;

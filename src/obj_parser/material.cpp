@@ -78,6 +78,16 @@ std::string& material::get_bump_path()
     return bump_path_;
 }
 
+float& material::get_Ni()
+{
+    return Ni;
+}
+
+unsigned int& material::get_illum()
+{
+    return illum;
+}
+
 float& material::get_dissolve()
 {
     return dissolve;
