@@ -101,17 +101,18 @@ scene::sample_pixel(glm::vec3& pos, glm::vec3& dir, unsigned int depth,
           // Offset pos slightly to avoid numerical errors otherwise we might
           // intersect with ourself
           // Compute reflected color
-          auto p = v.pos + 0.0001f * reflect;
+          auto p = v.pos + 0.001f * v.norm;
           color += v.mat->get_specular() * sample_pixel(p, reflect, depth - 1, nb);
         }
       else if (!basic_ray_tracing)
         {
-          auto p = v.pos + 0.0001f * reflect;
+          auto p = v.pos+ 0.001f * v.norm;
           glm::vec3 rand_dir = create_rand_dir(v.norm, nb);
           color += v.mat->get_diffuse() * sample_pixel(p, rand_dir, depth - 1, nb);
         }
     }
 
+  assert(glm::dot(reflect, v.norm) >= 0.);
   if (basic_ray_tracing)
     compute_light(v, color, reflect);
 

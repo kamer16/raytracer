@@ -197,7 +197,7 @@ intersect_ray(material& mat, glm::vec3& eye_pos, glm::vec3& eye_dir)
       glm::vec3 n = glm::normalize(glm::cross(u, v));
       float dot_val = -glm::dot(n, glm::normalize(eye_dir));
       // Ignore when ray is parallel to triangle or wrong side
-      if (dot_val <= std::numeric_limits<float>::epsilon())
+      if (fabs(dot_val) <= std::numeric_limits<float>::epsilon())
         continue;
       // Find intersection on plane
       float r = -glm::dot(n, eye_pos - v0) / glm::dot(n, eye_dir);
@@ -220,7 +220,8 @@ intersect_ray(material& mat, glm::vec3& eye_pos, glm::vec3& eye_dir)
           glm::vec3 interpolated_normal = glm::normalize(s * n1 + t * n2 +
                                                          (1 - (t + s)) * n0);
           float new_dist = glm::distance(p, eye_pos);
-          if (new_dist < res.dist)
+          // Object has to be closer but not too close
+          if (new_dist < res.dist && new_dist > 0.01f)
             {
               res.dist = new_dist;
               res.norm = interpolated_normal;
