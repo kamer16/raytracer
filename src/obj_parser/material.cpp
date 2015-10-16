@@ -126,3 +126,8 @@ material::get_boundary()
 {
   return ::get_boundary(*this);
 }
+
+void material::compute_kdtree()
+{
+  // TODO
+}

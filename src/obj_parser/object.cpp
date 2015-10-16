@@ -18,6 +18,13 @@ object::set_model_mat(glm::mat4& model_mat)
     model_mat_ = model_mat;
 }
 
+void
+object::compute_kdtree()
+{
+  for (auto& mat: materials_)
+    mat->compute_kdtree();
+}
+
 
 auto
 object::get_materials() -> materials_t&

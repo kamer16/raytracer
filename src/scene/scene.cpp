@@ -96,15 +96,12 @@ scene::sample_pixel(glm::vec3& pos, glm::vec3& dir, unsigned int depth,
   out_color += v.mat->get_emissive();
   if (depth)
     {
-      // Offset pos slightly to avoid numerical errors otherwise we might
-      // intersect with ourself
-      auto p = v.pos + 0.001f * v.norm;
       // Default value for reflective illumination 5
       glm::vec3 new_dir = reflect;
       glm::vec3 color = v.mat->get_specular();
       // Used to know where to offset ray to not reintersect with itself
       glm::vec3 norm = v.norm;
-      if (basic_ray_tracing)
+      if (basic_ray_tracing && v.mat->get_illum() != 7)
         { /* Just reflect */ }
       else if (v.mat->get_illum() == 2)
         {
@@ -145,6 +142,8 @@ scene::sample_pixel(glm::vec3& pos, glm::vec3& dir, unsigned int depth,
           color *= glm::vec3(Re);
         }
 
+      // Offset pos slightly to avoid numerical errors otherwise we might
+      // intersect with ourself
       auto p_r = v.pos + 0.001f * norm;
       assert(glm::dot(new_dir, norm) >= -0.1);
       out_color += color * sample_pixel(p_r, new_dir, depth - 1, nb, Ni);

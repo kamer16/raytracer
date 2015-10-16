@@ -3,6 +3,7 @@ SOURCES=main.cpp \
 	scene/scene.cpp \
 	extra/polygon.cpp \
 	extra/utility.cpp \
+	extra/kdtree.cpp \
 	light/light.cpp \
 	obj_parser/material.cpp \
 	obj_parser/material_lib.cpp \

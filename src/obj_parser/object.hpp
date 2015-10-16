@@ -39,6 +39,7 @@ public:
     // Iterate on all vertices and computes width, height and best location
     // point.
     boundary get_boundary();
+    void compute_kdtree();
 protected:
     materials_t materials_;
 private:

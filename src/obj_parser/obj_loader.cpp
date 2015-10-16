@@ -395,5 +395,6 @@ obj_loader::load_obj(std::string& file) -> object*
     std::sort(res->get_materials().begin(), res->get_materials().end(),
               sort_materials);
     ifs_.close();
+    res->compute_kdtree();
     return res;
 }

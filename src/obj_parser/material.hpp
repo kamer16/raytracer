@@ -10,6 +10,7 @@
 # include <tuple>
 
 # include "extra/utility.hpp"
+# include "extra/kdtree.hpp"
 
 class resource_manager;
 
@@ -49,6 +50,7 @@ public:
     render_type get_render_type();
     void set_render_type(render_type type);
     vertices_idx& get_indices();
+    void compute_kdtree();
     index_map& get_idx_lut();
 
     boundary get_boundary();
@@ -93,6 +95,10 @@ private:
 
     // By defalut a material has no textures and only basic material color
     render_type render_type_ = render_type::color;
+
+    // Binary tree used to cut object in small cubes to avoid looking for all
+    // triangles
+    kdtree tree;
 protected:
     // Associated indices to material, each pack of 3 indices represents a
     // triangle and the data is found in the vertex buffer whichi usually is on

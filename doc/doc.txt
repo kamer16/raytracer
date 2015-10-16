@@ -5,6 +5,9 @@ http://www.cs.princeton.edu/courses/archive/fall06/cos526/tmp/wynn.pdf
 https://graphics.stanford.edu/courses/cs348b-03/papers/veach-chapter10.pdf
 http://www.cs.jhu.edu/~misha/ReadingSeminar/Papers/Veach94.pdf
 
+# Kd-tree
+http://www.sci.utah.edu/~wald/Publications/2006/NlogN/download/kdtree.pdf
+
 Here is a list of different lighting models:
 
 Illumination    Properties that are turned on in the
