@@ -54,7 +54,9 @@ public:
     index_map& get_idx_lut();
 
     boundary get_boundary();
-    voxel intersect_ray(glm::vec3& L, glm::vec3& ray);
+    voxel intersect_ray(glm::vec3& pos, glm::vec3& dir);
+    voxel intersect_ray(kdtree* tree, glm::vec3& pos, glm::vec3& dir,
+                        glm::vec3& inv_dir);
     container_vnta& get_vertices();
     ~material() = default;
 private:

@@ -64,7 +64,7 @@ private:
     unsigned int y_res_;
     std::vector<glm::vec3> res_;
     static std::atomic<unsigned short> counter;
-    bool basic_ray_tracing = true;
+    bool basic_ray_tracing = false;
 };
 
 # include "scene/scene.hxx"

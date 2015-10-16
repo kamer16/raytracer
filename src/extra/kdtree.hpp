@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 
+#include "extra/utility.hpp"
 struct plane
 {
   glm::vec3 norm;
@@ -22,9 +23,14 @@ class kdtree
 public:
   kdtree(float width, float height, float depth, glm::vec3& pos);
   kdtree();
-  aabb box;
+  aabb box_;
   kdtree* left_;
   kdtree* right_;
+
+  void compute_box(const std::vector<unsigned int>& indices,
+                   const std::vector<utility::vertex_vnta>& vertices);
+  void split(const std::vector<unsigned int>& indices,
+             const std::vector<utility::vertex_vnta>& vertices);
 };
 
 class kdtree_leaf : public kdtree
@@ -36,3 +42,6 @@ public:
   // the GPU in OpenGL
  vertices_idx indices_;
 };
+
+kdtree* create_kdtree(const std::vector<unsigned int>& indices,
+                      const std::vector<utility::vertex_vnta>& vertices);

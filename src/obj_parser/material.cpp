@@ -116,6 +116,32 @@ material::set_render_type(render_type type)
 }
 
 voxel
+material::intersect_ray(kdtree* tree, glm::vec3& pos, glm::vec3& dir,
+                        glm::vec3& inv_dir)
+{
+  if (!tree)
+    return voxel();
+
+  if (tree->box_.intersect(pos, inv_dir))
+    {
+      if (tree->right_ == tree->left_)
+        {
+          // TODO at the moment we only have bounding boxes
+          kdtree_leaf* leaf = static_cast<kdtree_leaf*>(tree);
+          return ::intersect_ray(*this, pos, dir, leaf->indices_);
+        }
+      else
+        {
+          voxel v0 = intersect_ray(tree_->left_, pos, dir, inv_dir);
+          voxel v1 = intersect_ray(tree_->right_, pos, dir, inv_dir);
+          return v0.dist < v1.dist ? v0 : v1;
+        }
+    }
+  else
+    return voxel();
+}
+
+voxel
 material::intersect_ray(glm::vec3& pos, glm::vec3& dir)
 {
   glm::vec3 inv_dir;
@@ -123,12 +149,7 @@ material::intersect_ray(glm::vec3& pos, glm::vec3& dir)
   inv_dir.y = fabsf(dir.y) < 0.001f ? FLT_MAX : 1.f / dir.y;
   inv_dir.z = fabsf(dir.z) < 0.001f ? FLT_MAX : 1.f / dir.z;
 
-  // TODO at the moment we only have bounding boxes
-  kdtree_leaf* tree = static_cast<kdtree_leaf*>(tree_);
-  if (tree->box.intersect(pos, inv_dir))
-    return ::intersect_ray(*this, pos, dir, tree->indices_);
-  else
-    return voxel();
+  return intersect_ray(tree_, pos, dir, inv_dir);
 }
 
 boundary
@@ -139,22 +160,6 @@ material::get_boundary()
 
 void material::compute_kdtree()
 {
-  using vertex_t = typename material::value_type;
-  tree_ = new kdtree_leaf;
-  const std::vector<vertex_t> vertices = get_vertices();
-  for (unsigned i = 0; i < indices.size(); ++i)
-    {
-      const glm::vec3& v = vertices[indices[i]].v;
-      tree_->box.min_.x = std::min(v.x -0.001f, tree_->box.min_.x);
-      tree_->box.min_.y = std::min(v.y -0.001f, tree_->box.min_.y);
-      tree_->box.min_.z = std::min(v.z -0.001f, tree_->box.min_.z);
-
-      tree_->box.max_.x = std::max(v.x + 0.001f, tree_->box.max_.x);
-      tree_->box.max_.y = std::max(v.y + 0.001f, tree_->box.max_.y);
-      tree_->box.max_.z = std::max(v.z + 0.001f, tree_->box.max_.z);
-    }
-  // TODO this is a huge copy, should find a way to only have indices duplicated
-  // between material and kdtree
-  kdtree_leaf* tree = static_cast<kdtree_leaf*>(tree_);
-  tree->indices_ = indices;
+  assert(!tree_ && "only call this function once");
+  tree_ = create_kdtree(indices, get_vertices());
 }
