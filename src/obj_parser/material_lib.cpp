@@ -178,11 +178,11 @@ get_boundary(material& mat)
 }
 
 voxel
-intersect_ray(material& mat, glm::vec3& eye_pos, glm::vec3& eye_dir)
+intersect_ray(material& mat, glm::vec3& eye_pos, glm::vec3& eye_dir,
+              std::vector<unsigned>& indices)
 {
   using vertex_t = typename material::value_type;
   const std::vector<vertex_t>& vertices = mat.get_vertices();
-  const auto& indices = mat.get_indices();
   voxel res;
   for (unsigned i = 0; i < indices.size(); i += 3)
     {

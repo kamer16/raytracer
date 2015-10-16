@@ -35,7 +35,8 @@ private:
     std::string dir_;
 };
 
-voxel intersect_ray(material& mat, glm::vec3& eye_pos, glm::vec3& eye_dir);
+voxel intersect_ray(material& mat, glm::vec3& eye_pos, glm::vec3& eye_dir,
+                    std::vector<unsigned int>& indices);
 boundary get_boundary(material& mat);
 
 #endif // MATERIAL_LIB_HPP

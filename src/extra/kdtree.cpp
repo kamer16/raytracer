@@ -32,3 +32,10 @@ kdtree::kdtree(float width, float height, float depth, glm::vec3& pos)
   box = { { pos.x - width / 2, pos.y - height / 2, pos.z - depth / 2 },
           { pos.x + width / 2, pos.y + height / 2, pos.z + depth / 2 } };
 }
+
+kdtree::kdtree()
+  : left_(nullptr), right_(nullptr)
+{
+  box = { { FLT_MAX, FLT_MAX, FLT_MAX },
+          { -FLT_MAX, -FLT_MAX, -FLT_MAX } };
+}

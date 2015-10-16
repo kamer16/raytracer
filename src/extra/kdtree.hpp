@@ -21,7 +21,7 @@ class kdtree
 {
 public:
   kdtree(float width, float height, float depth, glm::vec3& pos);
-  kdtree() = default;
+  kdtree();
   aabb box;
   kdtree* left_;
   kdtree* right_;
@@ -34,5 +34,5 @@ public:
   // Associated indices to material, each pack of 3 indices represents a
   // triangle and the data is found in the vertex buffer whichi usually is on
   // the GPU in OpenGL
- vertices_idx indices;
+ vertices_idx indices_;
 };

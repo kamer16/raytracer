@@ -98,7 +98,7 @@ private:
 
     // Binary tree used to cut object in small cubes to avoid looking for all
     // triangles
-    kdtree tree;
+    kdtree* tree_;
 protected:
     // Associated indices to material, each pack of 3 indices represents a
     // triangle and the data is found in the vertex buffer whichi usually is on
@@ -108,7 +108,8 @@ protected:
 
 };
 
-voxel intersect_ray(material& mat, glm::vec3& eye_pos, glm::vec3& eye_dir);
+voxel intersect_ray(material& mat, glm::vec3& eye_pos, glm::vec3& eye_dir,
+                    std::vector<unsigned int>& indices);
 boundary get_boundary(material& mat);
 
 #endif // MATERIAL_HPP
