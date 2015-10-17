@@ -24,12 +24,12 @@ public:
   kdtree(float width, float height, float depth, glm::vec3& pos);
   kdtree();
   aabb box_;
-  kdtree* left_;
-  kdtree* right_;
+  kdtree* left_ = nullptr;
+  kdtree* right_ = nullptr;
 
   void compute_box(const std::vector<unsigned int>& indices,
                    const std::vector<utility::vertex_vnta>& vertices);
-  void split(const std::vector<unsigned int>& indices,
+  bool split(const std::vector<unsigned int>& indices,
              const std::vector<utility::vertex_vnta>& vertices);
 };
 

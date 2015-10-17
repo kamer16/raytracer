@@ -100,7 +100,7 @@ private:
 
     // Binary tree used to cut object in small cubes to avoid looking for all
     // triangles
-    kdtree* tree_;
+    kdtree* tree_ = nullptr;
 protected:
     // Associated indices to material, each pack of 3 indices represents a
     // triangle and the data is found in the vertex buffer whichi usually is on

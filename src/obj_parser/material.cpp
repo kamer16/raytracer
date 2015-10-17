@@ -132,8 +132,8 @@ material::intersect_ray(kdtree* tree, glm::vec3& pos, glm::vec3& dir,
         }
       else
         {
-          voxel v0 = intersect_ray(tree_->left_, pos, dir, inv_dir);
-          voxel v1 = intersect_ray(tree_->right_, pos, dir, inv_dir);
+          voxel v0 = intersect_ray(tree->left_, pos, dir, inv_dir);
+          voxel v1 = intersect_ray(tree->right_, pos, dir, inv_dir);
           return v0.dist < v1.dist ? v0 : v1;
         }
     }
