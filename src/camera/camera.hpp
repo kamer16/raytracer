@@ -12,6 +12,7 @@ public:
     // look_at_z is the best place to look when looking along -z axis
     // Bigger plane_dist gives more orthographic projection
     camera(glm::vec3& look_at_z, float plane_dist = 0.5f);
+    camera(glm::vec3&& look_at_z, float plane_dist = 0.5f);
     // Used for OpenGL might need it in future
     const glm::mat4& get_proj_mat();
     // Used for OpenGL might need it in future

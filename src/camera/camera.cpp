@@ -3,6 +3,28 @@
 #include "camera/camera.hpp"
 #include "extra/utility.hpp"
 
+camera::camera(glm::vec3&& look_at_z, float plane_dist)
+    : position_(look_at_z + glm::vec3(0, 0, plane_dist)),
+      rotation_(0.0, 0),
+      fov_(65.0f),
+      plane_dist_(plane_dist)
+{
+    // Spherical coordinates to cartesian coordinates formula
+    backward_ = glm::vec3(glm::cos(rotation_.x) * glm::sin(rotation_.y),
+                         glm::sin(rotation_.x),
+                         glm::cos(rotation_.x) * glm::cos(rotation_.y));
+    // Always on horizontal i-e y == 0
+    // direction is the one of y_axis rotation + pi/2.
+    right_ = glm::vec3(glm::sin(rotation_.y + 3.14f / 2.0f),
+                       0,
+                       glm::cos(rotation_.y + 3.14f / 2.0f));
+    up_ = glm::cross(backward_, right_);
+
+    backward_ = glm::normalize(backward_);
+    right_ = glm::normalize(right_);
+    up_ = glm::normalize(up_);
+}
+
 camera::camera(glm::vec3& look_at_z, float plane_dist)
     : position_(look_at_z + glm::vec3(0, 0, plane_dist)),
       rotation_(0.0, 0),

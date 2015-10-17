@@ -10,7 +10,7 @@ std::atomic<unsigned short> scene::counter(0);
 // of bound.width to look_at point
 scene::scene(boundary& bound,
              unsigned int x_res, unsigned int y_res)
-    : camera_(bound.look_at, bound.width),
+    : camera_(bound.look_at + glm::vec3(0.1, -0.15, 0.2), bound.width),
       width_(bound.width),
       height_(bound.height),
       x_res_(x_res),
@@ -51,19 +51,27 @@ scene::operator() (const tbb::blocked_range<unsigned int>& r) const
                                   h / y_res;
 
           unsigned int idx = x + static_cast<unsigned int>(y) * x_res_;
-          auto dir = glm::normalize(eye_look - eye);
           res[idx] = glm::vec3(0.f, 0.f, 0.f);
           int nb_samples = 32;
           if (basic_ray_tracing)
             nb_samples = 1;
           float div = static_cast<float>(nb_samples);
+          // Hack to mack image brighter
           if (!basic_ray_tracing)
             div /= 2;
-          unsigned depth = 4;
+          unsigned depth = 5;
           // We assume that camera starts in air
-          float Ni = 1.f;
+          std::stack<float> stack_ni;
+          stack_ni.push(1.f);
           for (int i = 0; i < nb_samples; ++i)
-            res[idx] = res[idx] + sample_pixel(eye, dir, depth, nb, Ni) / div;
+            {
+              // Sub sample in whole area of pixel
+              float r1 = static_cast<float>(erand48(nb)) - 0.5f;
+              float r2 = static_cast<float>(erand48(nb)) - 0.5f;
+              auto look = eye_look + u * r1 * w / x_res + v * r2 * h / y_res;
+              auto dir = glm::normalize(look - eye);
+              res[idx] += sample_pixel(eye, dir, depth, nb, stack_ni) / div;
+            }
 
           res[idx].x = std::min(1.f, res[idx].x);
           res[idx].y = std::min(1.f, res[idx].y);
@@ -82,7 +90,7 @@ scene::operator() (const tbb::blocked_range<unsigned int>& r) const
 // dir points towards objects
 glm::vec3
 scene::sample_pixel(glm::vec3& pos, glm::vec3& dir, unsigned int depth,
-                    unsigned short* nb, float Ni) const
+                    unsigned short* nb, std::stack<float> stack_ni) const
 {
   glm::vec3 out_color(0.f, 0.f, 0.f);
   voxel v = intersect_ray(pos, dir);
@@ -101,6 +109,7 @@ scene::sample_pixel(glm::vec3& pos, glm::vec3& dir, unsigned int depth,
       glm::vec3 color = v.mat->get_specular();
       // Used to know where to offset ray to not reintersect with itself
       glm::vec3 norm = v.norm;
+      auto stack_ni_cpy = stack_ni;
       if (basic_ray_tracing && v.mat->get_illum() != 7)
         { /* Just reflect */ }
       else if (v.mat->get_illum() == 2)
@@ -114,15 +123,19 @@ scene::sample_pixel(glm::vec3& pos, glm::vec3& dir, unsigned int depth,
       else if (v.mat->get_illum() == 7)
         {
           float ni, nt;
-          if (glm::dot(v.norm, -dir) < 0)
+          bool into = glm::dot(v.norm, dir) < 0;
+          if (into)
             {
-              ni = 1; nt = 1.5; norm = -norm;
-              // Check if you are entering or not
+              ni = stack_ni.top();
+              nt = v.mat->get_Ni();
+              stack_ni.push(nt);
             }
           else
             {
-              nt = 1.5;
-              ni = 1;
+              norm = -norm;
+              ni = stack_ni.top();
+              stack_ni.pop();
+              nt = stack_ni.top();
             }
           float Re = reflectance(norm, dir, ni, nt);
           float Tr = 1.f - Re;
@@ -134,19 +147,21 @@ scene::sample_pixel(glm::vec3& pos, glm::vec3& dir, unsigned int depth,
               auto p_r = v.pos - 0.001f * norm;
               assert(glm::dot(refr, -norm) >= 0);
               // Transparent objects should use transmittance filter
-              out_color += Tr * sample_pixel(p_r, refr, depth - 1, nb,
-                                                     v.mat->get_Ni());
+              out_color += Tr * sample_pixel(p_r, refr, depth - 1, nb, stack_ni);
             }
           // Perfect specular color should we filter light by specular component
           // of object ?
           color *= glm::vec3(Re);
+          color = glm::vec3(Re);
         }
 
       // Offset pos slightly to avoid numerical errors otherwise we might
       // intersect with ourself
       auto p_r = v.pos + 0.001f * norm;
       assert(glm::dot(new_dir, norm) >= -0.1);
-      out_color += color * sample_pixel(p_r, new_dir, depth - 1, nb, Ni);
+      if (glm::length(color) > 0.01)
+        out_color += color * sample_pixel(p_r, new_dir, depth - 1, nb,
+                                          stack_ni_cpy);
     }
 
   assert(glm::dot(reflect, v.norm) >= 0. && glm::dot(v.norm, dir) <= 0);

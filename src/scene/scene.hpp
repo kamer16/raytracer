@@ -1,6 +1,7 @@
 #ifndef RENDER_SCENE_CPP
 # define RENDER_SCENE_CPP
 
+# include <stack>
 # include <vector>
 # include <atomic>
 
@@ -34,7 +35,7 @@ public:
 
 private:
     glm::vec3 sample_pixel(glm::vec3& eye, glm::vec3& ray, unsigned int depth,
-                           unsigned short* nm, float Ni) const;
+                           unsigned short* nm, std::stack<float> stack_ni) const;
     void compute_light(voxel& v, glm::vec3& color, glm::vec3& reflect) const;
     void dump_to_file() const;
     // Can be used to create new random normal for the monte carlo method
