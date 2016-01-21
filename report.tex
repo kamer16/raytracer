@@ -1,0 +1,52 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+
+\title{Rapport synthèse d'image}
+\author{Tanguy Dupont De Dinechin, Valentin Tolmer}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+Notre projet consiste en un raytracer, basé sur la méthode de Monte-Carlo. Le
+format d'entrée est du OBJ, donc la plupart des ressources de modèles sont
+gérées.
+
+La sortie est une image en PPM.
+
+\section{Algorithme}
+
+L'algorithme utilisé est celui de Monte-Carlo, avec 10000 rayons lancés pour
+chaque point avec une distribution cosinus par rapport à la normale.
+
+\section{Features}
+
+\begin{itemize}
+  \item Lumière ambiante, ponctuelle
+  \item Lumière spéculaire
+  \item Réflexion
+  \item Ombres portées
+  \item Multi-threading
+  \item Oct-tree pour accélérer le traitement.
+\end{itemize}
+
+\section{Critiques et améliorations}
+
+Notre image souffre d'un effet "poivre et sel", inhérent à la méthode de
+Monte-Carlo. Lancer beaucoup plus de rayons est une possibilité, mais elle est
+très coûteuse (il faudrait augmenter de plusieurs ordres de magnitude le nombre
+de rayons lancés par pixel).
+
+Une méthode plus efficace pourrait être d'opérer
+une passe de flou gaussien sur le résultat, ou de manière un peu similaire
+d'effectuer du super-sampling. Un problème du flou gaussien serait que ça
+rendrait les bords flous. Pour pallier à ce problème, un flou gaussien
+sélectif, qui prend uniquement en compte les couleurs pas trop éloignées du
+pixel concerné, serait utile. Idéalement, la distance serait mesurée en LAB car
+l'effet est surtout dû à un problème d'intensité lumineuse.
+
+
+\end{document}
