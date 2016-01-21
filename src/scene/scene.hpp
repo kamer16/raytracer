@@ -24,6 +24,8 @@ public:
     using spot_lights = std::vector<spot_light*>;
     using objects = std::vector<object*>;
 
+    static unsigned int nb_samples;
+
     scene(boundary& bound, unsigned int x_res, unsigned int y_res);
     void add_object(object *object);
     template <class light_t>

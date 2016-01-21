@@ -6,6 +6,8 @@
 
 std::atomic<unsigned short> scene::counter(0);
 
+unsigned int scene::nb_samples(0);
+
 // Passing bound.width to camera is a good estimate to place camera a distance
 // of bound.width to look_at point
 scene::scene(boundary& bound,
@@ -52,7 +54,6 @@ scene::operator() (const tbb::blocked_range<unsigned int>& r) const
 
           unsigned int idx = x + static_cast<unsigned int>(y) * x_res_;
           res[idx] = glm::vec3(0.f, 0.f, 0.f);
-          int nb_samples = 32;
           if (basic_ray_tracing)
             nb_samples = 1;
           float div = static_cast<float>(nb_samples);
@@ -63,7 +64,7 @@ scene::operator() (const tbb::blocked_range<unsigned int>& r) const
           // We assume that camera starts in air
           std::stack<float> stack_ni;
           stack_ni.push(1.f);
-          for (int i = 0; i < nb_samples; ++i)
+          for (unsigned int i = 0; i < nb_samples; ++i)
             {
               // Sub sample in whole area of pixel
               float r1 = static_cast<float>(erand48(nb)) - 0.5f;
