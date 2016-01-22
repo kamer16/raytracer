@@ -28,9 +28,13 @@ chaque point avec une distribution cosinus par rapport à la normale.
   \item Lumière ambiante, ponctuelle
   \item Lumière spéculaire
   \item Réflexion
+  \item Interporlation des normales
   \item Ombres portées
   \item Multi-threading
   \item Oct-tree pour accélérer le traitement.
+  \item Parseur de fichier OBJ
+  \item Anti-aliasing
+  \item un début de gestion des textures et des normals map
 \end{itemize}
 
 \section{Critiques et améliorations}
@@ -47,6 +51,12 @@ rendrait les bords flous. Pour pallier à ce problème, un flou gaussien
 sélectif, qui prend uniquement en compte les couleurs pas trop éloignées du
 pixel concerné, serait utile. Idéalement, la distance serait mesurée en LAB car
 l'effet est surtout dû à un problème d'intensité lumineuse.
+
+
+On pourra également utiliser d'autre méthodes, comme la Bidirectional path
+tracing, ou l'algorithme du Metropolis light transport.
+Ces méthodes arrivent à calculer des chemins qui transporte plus d'information.
+Par exemple, dans Metropolis, lorsque un chemin est valide, il est réutilisé.
 
 
 \end{document}
